@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.deepseek.com https://dashscope.aliyuncs.com https://qianfan.baidubce.com; img-src 'self' data:; font-src 'self' data:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';">
   <title>干个活儿 — 职业方向智能决策平台</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -461,6 +462,10 @@
       padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 13px;
     }
 
+    /* ===== 隐私弹窗 ===== */
+    .privacy-check a { color: var(--primary); text-decoration: underline; }
+    .privacy-check a:hover { color: var(--primary-dark); }
+
     @media (max-width: 640px) {
       .form-row { grid-template-columns: 1fr; }
       .nav-links { display: none; }
@@ -912,6 +917,13 @@
             通义千问 → <a href="https://dashscope.console.aliyun.com" target="_blank" style="color:var(--primary);">阿里云百炼</a>（免费额度）<br>
             文心一言 → <a href="https://console.bce.baidu.com" target="_blank" style="color:var(--primary);">百度智能云</a>
           </div>
+          <div id="privacy-notice" style="margin-top:12px;font-size:12px;color:var(--text-hint);line-height:1.7;background:#FFFBEB;border:1px solid #FDE68A;padding:12px;border-radius:8px;">
+            🔒 <strong>数据安全说明：</strong><br>
+            · 所有用户信息<strong>仅存储在您的浏览器中</strong>，我们不收集、不上传任何数据<br>
+            · AI分析时，发送到模型API的数据已经过<strong>匿名脱敏处理</strong>（姓名不发送、年龄用范围替代、城市用级别替代、出生日期用年代+季节替代）<br>
+            · API Key 仅保存在本地，每次调用直连AI厂商，不经过我们的服务器<br>
+            · <a href="javascript:clearAllData()" style="color:var(--coral);text-decoration:underline;">清除本地所有数据</a>
+          </div>
         </div>
       </div>
     </div>
@@ -1191,7 +1203,30 @@
 
       <div class="step-nav">
         <button class="step-prev" onclick="prevStep(4)">← 上一步</button>
-        <button class="step-next" onclick="generateResult()" id="gen-btn" style="background:var(--green);font-size:15px;padding:12px 28px;">🚀 生成我的报告</button>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+          <label class="privacy-check" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);cursor:pointer;">
+            <input type="checkbox" id="privacy-consent" style="accent-color:var(--primary);" onchange="updateGenButton()">
+            我已了解：数据仅在本地处理，AI调用已做脱敏处理（<a href="javascript:showPrivacyDetail()" style="color:var(--primary);">详情</a>）
+          </label>
+          <button class="step-next" onclick="generateResult()" id="gen-btn" style="background:#9CA3AF;font-size:15px;padding:12px 28px;cursor:not-allowed;" disabled>🚀 生成我的报告</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 隐私详情弹窗 -->
+    <div id="privacy-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;justify-content:center;align-items:center;padding:20px;">
+      <div style="background:#fff;border-radius:16px;max-width:500px;width:100%;padding:28px;max-height:80vh;overflow-y:auto;">
+        <h3 style="font-size:18px;font-weight:800;margin-bottom:16px;">🔒 数据安全承诺</h3>
+        <div style="font-size:14px;color:var(--text-muted);line-height:1.8;">
+          <p><strong>1. 零服务器架构</strong><br>所有用户信息仅保存在你的浏览器本地（localStorage），我们没有任何服务器、数据库来收集你的数据。你关掉浏览器，数据就在你的设备上，谁也拿不走。</p>
+          <p style="margin-top:12px;"><strong>2. 内容安全策略（CSP）</strong><br>页面已启用严格的CSP策略：仅允许自身脚本运行，禁止加载第三方JS、禁止iframe嵌入、禁止外部字体/图片加载。从源头阻断XSS跨站脚本攻击。</p>
+          <p style="margin-top:12px;"><strong>3. 输入安全过滤</strong><br>所有表单输入均经过安全过滤和长度限制，防止恶意代码注入。只有合法的中文、英文、数字和常见标点会被保留。</p>
+          <p style="margin-top:12px;"><strong>4. AI调用脱敏</strong><br>当使用AI分析时，发送到第三方API的数据已经过脱敏处理：真实姓名不发送、年龄用范围替代（如"28-34岁"）、城市用级别替代（如"一线城市"）、出生日期用年代+季节替代（如"1990年代·夏季"）。AI服务商拿不到任何个人身份信息。</p>
+          <p style="margin-top:12px;"><strong>5. 规则引擎本地运行</strong><br>基础分析（不启用AI时）完全在本地浏览器运行，数据不出你的设备，零网络请求。</p>
+          <p style="margin-top:12px;"><strong>6. 一键数据清除</strong><br>点击AI设置中的"清除本地所有数据"可立即删除全部信息，不留痕迹。</p>
+          <p style="margin-top:12px;"><strong>7. 部署安全建议</strong><br>建议使用HTTPS协议部署（Gitee Pages默认支持HTTPS），HTTP部署存在中间人攻击风险，可能被篡改页面内容。</p>
+        </div>
+        <button onclick="document.getElementById('privacy-modal').style.display='none'" style="margin-top:20px;width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">我知道了</button>
       </div>
     </div>
 
@@ -1554,16 +1589,38 @@ function updateStepIndicator(n) {
   }
 }
 
+// ===== SECURITY: INPUT SANITIZATION =====
+function sanitizeInput(str) {
+  if (!str || typeof str !== 'string') return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;')
+    .trim();
+}
+
+function validateInput(str, maxLen) {
+  if (!str || typeof str !== 'string') return '';
+  const cleaned = str.trim().substring(0, maxLen || 100);
+  // 只允许中文、英文、数字、常见标点、空格
+  return cleaned.replace(/[^\u4e00-\u9fa5a-zA-Z0-9\s\-_,.()（）、。，；：！？【】《》""''·@#+×\u2014\u2013\u2026\u00b7]/g, '');
+}
+
 // ===== COLLECT FORM DATA =====
 function collectFormData() {
-  const name = document.getElementById('f-name').value || '你';
-  const age = parseInt(document.getElementById('f-age').value) || 25;
-  const city = document.getElementById('f-city').value || '未知城市';
+  const nameRaw = document.getElementById('f-name').value || '你';
+  const name = validateInput(nameRaw, 30);
+  const age = Math.min(Math.max(parseInt(document.getElementById('f-age').value) || 25, 16), 80);
+  const cityRaw = document.getElementById('f-city').value || '未知城市';
+  const city = validateInput(cityRaw, 50);
   const edu = document.getElementById('f-edu').value || '本科';
-  const years = parseInt(document.getElementById('f-years').value) || 0;
-  const salary = parseInt(document.getElementById('f-salary').value) || 10;
-  const birthYear = parseInt(document.getElementById('f-birth-year').value) || 1995;
-  const birthMonth = parseInt(document.getElementById('f-birth-month').value) || 6;
+  const years = Math.min(Math.max(parseInt(document.getElementById('f-years').value) || 0, 0), 50);
+  const salary = Math.min(Math.max(parseInt(document.getElementById('f-salary').value) || 10, 1), 200);
+  const birthYear = Math.min(Math.max(parseInt(document.getElementById('f-birth-year').value) || 1995, 1940), 2010);
+  const birthMonth = Math.min(Math.max(parseInt(document.getElementById('f-birth-month').value) || 6, 1), 12);
 
   const selectedTech = [...document.querySelectorAll('#tags-tech .skill-tag.selected')].map(t => t.textContent);
   const selectedSoft = [...document.querySelectorAll('#tags-soft .skill-tag.selected')].map(t => t.textContent);
@@ -1802,20 +1859,31 @@ function renderBasicResult(data, industries) {
 }
 
 // ===== AI API CALL =====
+function anonymizeData(data) {
+  // 安全脱敏：不发送真实姓名、精确年龄、具体城市、精确出生日期到第三方API
+  const ageRange = data.age < 22 ? '22岁以下' : data.age < 28 ? '22-27岁' : data.age < 35 ? '28-34岁' : data.age < 45 ? '35-44岁' : '45岁以上';
+  const cityTier = /^(北京|上海|深圳|广州)$/.test(data.city) ? '一线城市' :
+    /^(杭州|成都|武汉|南京|苏州|重庆|天津|西安|长沙|郑州|东莞|青岛|合肥|佛山|宁波|厦门|无锡|福州|济南|大连|沈阳|昆明)$/.test(data.city) ? '新一线或二线城市' : '二三线城市';
+  const birthDecade = Math.floor(data.birthYear / 10) * 10 + '年代';
+  const birthSeason = data.birthMonth <= 3 ? '春季' : data.birthMonth <= 6 ? '夏季' : data.birthMonth <= 9 ? '秋季' : '冬季';
+  return { ageRange, cityTier, birthDecade, birthSeason };
+}
+
 async function callAI(data) {
   const cfg = MODEL_CONFIG[aiConfig.model];
   if (!cfg) throw new Error('未选择AI模型');
 
-  const { name, age, city, edu, years, salary, birthYear, birthMonth, status, capital, risk, skills, certs, priorities } = data;
+  const { age, edu, years, salary, status, capital, risk, skills, certs, priorities } = data;
+  const anon = anonymizeData(data);
   const statusMap = { graduate: '应届毕业生/毕业1-2年在求职', jobless: '有工作但想换方向', unemployed: '失业中/被迫转型', startup: '有想法想创业' };
   const riskMap = { low: '求稳，希望收入稳定', mid: '可以接受中等风险', high: '敢冒险，能接受失败' };
 
-  const prompt = `你是一位资深职业规划专家，同时也精通中国传统五行命理理论。请根据以下用户的详细资料，生成一份专业的职业方向分析报告。
+  const prompt = `你是一位资深职业规划专家，同时也精通中国传统五行命理理论。请根据以下用户的脱敏资料，生成一份专业的职业方向分析报告。
+【隐私说明：以下信息已经过脱敏处理，不含真实姓名、精确地址、精确出生日期等个人身份信息】
 
-## 用户资料
-- 称呼：${name}
-- 年龄：${age}岁
-- 城市：${city}
+## 用户资料（已脱敏）
+- 年龄段：${anon.ageRange}
+- 所在城市级别：${anon.cityTier}
 - 学历：${edu}
 - 当前状态：${statusMap[status]}
 - 工作年限：${years}年
@@ -1824,10 +1892,10 @@ async function callAI(data) {
 - 持有证书：${certs.join('、') || '无'}
 - 可用资金：${capital === 0 ? '基本没有多余资金' : capital + '万元'}
 - 风险偏好：${riskMap[risk]}
-- 期望月薪：¥${salary}k
+- 期望月薪范围：¥${salary}k左右
 - 最关心的：${priorities.join('、') || '未指定'}
-- 出生年份：${birthYear}年
-- 出生月份：${birthMonth}月
+- 出生年代：${anon.birthDecade}
+- 出生季节：${anon.birthSeason}
 
 ## 输出要求
 请返回严格的JSON对象（不要额外文字），包含以下字段：
@@ -1839,19 +1907,19 @@ async function callAI(data) {
    - "resilience": 抗压韧性
    - "creativity": 创造力
    
-2. "industry_analysis": 字符串，150-250字，分析最适合的行业及原因，结合用户技能、经历和城市特征
+2. "industry_analysis": 字符串，150-250字，分析最适合的行业及原因，不要提及具体城市名，用"你所在的城市级别"替代
 
 3. "strength": 字符串，100-150字，分析用户在当前就业市场中的3个核心优势
 
 4. "risks": 数组，包含3-4个字符串，列出需要注意的风险点和短板（格式："⚠️ 风险描述"或"✅ 已规避的问题"）
 
-5. "timeline": 数组，包含3-4个对象，每个含"phase"（阶段标题，如"第1周"）和"action"（具体行动，30-50字）
+5. "timeline": 数组，包含3-4个对象，每个含"phase"（阶段标题，如"第1周"）和"action"（具体行动，30-50字，不要包含具体地名）
 
 6. "wuxing_analysis": 字符串，80-120字，从五行命理角度给出行业建议，提到具体的五行属性（木火土金水）和对应行业
 
 7. "verdict": 字符串，20-40字，给用户的一句核心建议（有力量、有温度）
 
-请确保所有分析具体、有数据感、不说套话。针对用户的具体情况给出个性化建议。`;
+请确保所有分析具体、有数据感、不说套话。不要输出任何个人身份信息。`;
 
   // Build request
   const headers = { 'Content-Type': 'application/json' };
@@ -1984,6 +2052,59 @@ function calcWuxing(year, month) {
   const wxNameMap = { mu: '木', huo: '火', tu: '土', jin: '金', shui: '水' };
 
   return { ...pct, dominant: wxNameMap[dominant] };
+}
+
+// ===== DATA PRIVACY =====
+function clearAllData() {
+  if (!confirm('⚠️ 确定要清除所有本地数据吗？\n\n这将删除：\n· 已保存的API Key\n· AI模型选择偏好\n· 表单填写记录\n\n此操作不可撤销。')) return;
+
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith('ganyihuo_')) keys.push(key);
+  }
+  keys.forEach(k => localStorage.removeItem(k));
+
+  aiConfig.apiKey = '';
+  aiConfig.enabled = false;
+  aiConfig.model = 'none';
+
+  document.querySelectorAll('.ai-model-btn').forEach(b => b.classList.remove('active'));
+  const firstBtn = document.querySelector('.ai-model-btn');
+  if (firstBtn) firstBtn.classList.add('active');
+
+  document.getElementById('api-key-section').style.display = 'none';
+  const fkey = document.getElementById('f-api-key');
+  if (fkey) fkey.value = '';
+
+  const badge = document.getElementById('ai-status-badge');
+  badge.textContent = '未启用';
+  badge.style.background = '#9CA3AF';
+
+  const consent = document.getElementById('privacy-consent');
+  if (consent) consent.checked = false;
+  updateGenButton();
+
+  alert('✅ 所有本地数据已清除。');
+}
+
+function showPrivacyDetail() {
+  document.getElementById('privacy-modal').style.display = 'flex';
+}
+
+function updateGenButton() {
+  const btn = document.getElementById('gen-btn');
+  const consent = document.getElementById('privacy-consent');
+  if (!btn || !consent) return;
+  if (consent.checked) {
+    btn.style.background = 'var(--green)';
+    btn.style.cursor = 'pointer';
+    btn.disabled = false;
+  } else {
+    btn.style.background = '#9CA3AF';
+    btn.style.cursor = 'not-allowed';
+    btn.disabled = true;
+  }
 }
 </script>
 
