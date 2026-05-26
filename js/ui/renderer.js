@@ -65,6 +65,15 @@ async function renderResult() {
     html += '</div>';
   }
 
+  // 智能选择默认Tab
+  if (completedCount < 2) {
+    if (completed.skills) currentResultTab = 'skills';
+    else if (completed.personality) currentResultTab = 'personality';
+    else if (completed.fortune) currentResultTab = 'fortune';
+  } else {
+    currentResultTab = 'combined';
+  }
+
   // Tab导航
   html += '<div class="result-tabs">';
   const tabs = [];
