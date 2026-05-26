@@ -74,6 +74,10 @@ function onModelComplete(model, result) {
 
 // --- 初始化 ---
 document.addEventListener('DOMContentLoaded', function() {
+  // 预加载行业数据和本地岗位数据
+  if (typeof loadIndustries === 'function') loadIndustries();
+  if (typeof loadLocalJobs === 'function') loadLocalJobs();
+
   // 初始化粒子背景
   if (typeof initParticles === 'function') initParticles();
 

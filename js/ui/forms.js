@@ -107,9 +107,12 @@ function collectSkillsStep() {
   if (s === 1) { d.experience = parseInt(val('sk-exp')) || 0; }
   if (s === 3) { d.capital = val('sk-capital'); d.risk = val('sk-risk'); d.time = val('sk-time'); d.income = parseInt(val('sk-income')) || 5; }
 }
-function skillsSubmit() {
+async function skillsSubmit() {
   collectSkillsStep();
-  const result = computeSkillsResult(currentForm.data);
+  // 显示加载状态
+  const submitBtn = document.querySelector('#skillsForm .btn-glow');
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '分析中...'; }
+  const result = await computeSkillsResult(currentForm.data);
   if (typeof onModelComplete === 'function') onModelComplete('skills', result);
 }
 

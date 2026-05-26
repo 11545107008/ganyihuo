@@ -2,16 +2,21 @@
    skills.js — 模型A: 能力适配引擎
    ============================================ */
 
-const INDUSTRIES_DATA = null; // 将由 industries.json 加载
 let industriesLoaded = false;
+let industriesLoadPromise = null;
 
 async function loadIndustries() {
   if (industriesLoaded) return;
-  const data = await loadJSON('data/industries.json');
-  if (data) {
-    window._industriesData = data.industries;
-    industriesLoaded = true;
-  }
+  if (industriesLoadPromise) return industriesLoadPromise;
+  industriesLoadPromise = (async () => {
+    const data = await loadJSON('data/industries.json');
+    if (data) {
+      window._industriesData = data.industries;
+      industriesLoaded = true;
+    }
+    return industriesLoaded;
+  })();
+  return industriesLoadPromise;
 }
 
 function getIndustries() {
@@ -19,7 +24,9 @@ function getIndustries() {
 }
 
 // --- 核心评分算法 ---
-function computeSkillsResult(formData) {
+async function computeSkillsResult(formData) {
+  // 确保行业数据已加载
+  if (!industriesLoaded) await loadIndustries();
   const industries = getIndustries();
   const results = [];
 
