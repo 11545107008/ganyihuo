@@ -952,7 +952,7 @@
           <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">规则引擎部署到Vercel后，前端不再包含核心算法，F12看不到分析逻辑。</div>
           <div class="form-group">
             <label class="form-label">后端API地址</label>
-            <input type="text" class="form-input" id="f-api-endpoint" placeholder="https://你的项目.vercel.app/api/analyze" onchange="onAPIEndpointChange()" />
+            <input type="text" class="form-input" id="f-api-endpoint" placeholder="https://ganyihuo-d4e3q4c0s-11545107008.projects.vercel.app/api/analyze" onchange="onAPIEndpointChange()" />
           </div>
           <label class="checkbox-label" style="margin-top:8px;">
             <input type="checkbox" id="f-use-backend" onchange="onUseBackendChange()"> 启用后端API（代替本地规则引擎）
@@ -1471,8 +1471,8 @@ let aiConfig = {
 
 // 后端API配置（部署Vercel后启用，规则引擎上云）
 let apiConfig = {
-  endpoint: '', // 例如: https://ganyihuo.vercel.app/api/analyze
-  useBackend: false // 是否使用后端API（代替本地规则引擎）
+  endpoint: 'https://ganyihuo-d4e3q4c0s-11545107008.projects.vercel.app/api/analyze', // Vercel Serverless 后端
+  useBackend: true // 默认启用后端API（核心算法上云，F12不可见）
 };
 
 const MODEL_CONFIG = {
@@ -1780,13 +1780,17 @@ function onAPIKeyChange() {
     }
   }
 
-  // Load API endpoint config
+  // Load API endpoint config (默认使用Vercel后端)
   const savedEndpoint = localStorage.getItem('ganyihuo_api_endpoint');
   if (savedEndpoint) {
     apiConfig.endpoint = savedEndpoint;
     apiConfig.useBackend = localStorage.getItem('ganyihuo_api_use_backend') === 'true';
     document.getElementById('f-api-endpoint').value = savedEndpoint;
     document.getElementById('f-use-backend').checked = apiConfig.useBackend;
+  } else {
+    // 首次使用：自动填入Vercel后端地址并启用
+    document.getElementById('f-api-endpoint').value = apiConfig.endpoint;
+    document.getElementById('f-use-backend').checked = true;
   }
 })();
 
