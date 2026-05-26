@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.deepseek.com https://dashscope.aliyuncs.com https://qianfan.baidubce.com; img-src 'self' data:; font-src 'self' data:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.deepseek.com https://dashscope.aliyuncs.com https://qianfan.baidubce.com https://*.vercel.app; img-src 'self' data:; font-src 'self' data:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';">
   <title>干个活儿 — 职业方向智能决策平台</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -296,6 +296,26 @@
     .advice-item-icon { font-size: 24px; margin-bottom: 10px; }
     .advice-item h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
     .advice-item p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+    /* ===== 行业指南 + 案例库 ===== */
+    .guide-card { background: var(--card); border-radius: 14px; padding: 20px; border: 1px solid var(--border); margin-bottom: 12px; transition: all 0.2s; }
+    .guide-card:hover { border-color: var(--primary-mid); box-shadow: var(--shadow-sm); }
+    .guide-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .guide-card-title { font-size: 15px; font-weight: 700; }
+    .guide-card-entry { font-size: 12px; color: var(--text-hint); background: var(--bg); padding: 3px 8px; border-radius: 4px; white-space: nowrap; }
+    .guide-card-body { font-size: 13px; color: var(--text-muted); line-height: 1.7; margin-bottom: 10px; }
+    .guide-card-meta { display: flex; gap: 12px; flex-wrap: wrap; }
+    .guide-meta-item { font-size: 12px; color: var(--primary); background: var(--primary-light); padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+    .guide-meta-item.warn { color: var(--amber); background: var(--amber-light); }
+
+    .case-card { background: linear-gradient(135deg, #FEF3C7 0%, #FEF9C3 100%); border-radius: 14px; padding: 18px; margin-bottom: 10px; border: 1px solid rgba(217,119,6,0.15); position: relative; overflow: hidden; }
+    .case-card::before { content: '真实案例'; position: absolute; top: 10px; right: 12px; font-size: 11px; color: var(--amber); font-weight: 600; opacity: 0.6; }
+    .case-card-body { font-size: 13px; color: #78350F; line-height: 1.7; }
+    .case-card-body strong { color: #B45309; }
+    .case-card-insight { font-size: 12px; color: #92400E; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(217,119,6,0.2); font-style: italic; }
+
+    .expand-toggle { font-size: 13px; color: var(--primary); cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; user-select: none; margin-top: 10px; }
+    .expand-toggle:hover { text-decoration: underline; }
 
     .wuxing-bars { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 8px; }
     .wuxing-item { text-align: center; }
@@ -925,6 +945,22 @@
             · <a href="javascript:clearAllData()" style="color:var(--coral);text-decoration:underline;">清除本地所有数据</a>
           </div>
         </div>
+
+        <!-- 后端API配置（隐藏壁垒） -->
+        <div style="margin-top:16px;padding-top:16px;border-top:1px dashed var(--border);">
+          <div style="font-size:14px;font-weight:700;margin-bottom:4px;">🛡 核心引擎配置</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">规则引擎部署到Vercel后，前端不再包含核心算法，F12看不到分析逻辑。</div>
+          <div class="form-group">
+            <label class="form-label">后端API地址</label>
+            <input type="text" class="form-input" id="f-api-endpoint" placeholder="https://你的项目.vercel.app/api/analyze" onchange="onAPIEndpointChange()" />
+          </div>
+          <label class="checkbox-label" style="margin-top:8px;">
+            <input type="checkbox" id="f-use-backend" onchange="onUseBackendChange()"> 启用后端API（代替本地规则引擎）
+          </label>
+          <div style="font-size:12px;color:var(--text-hint);margin-top:6px;">
+            💡 不配置API地址时，将使用本地规则引擎（完全免费、但代码公开可见）
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1270,6 +1306,12 @@
       <div id="industry-list"></div>
     </div>
 
+    <!-- 入行指南 -->
+    <div class="result-section" id="guide-section" style="margin-bottom:16px;">
+      <div class="result-section-title" style="margin-bottom:16px;">📘 入行指南</div>
+      <div id="guide-content"></div>
+    </div>
+
     <!-- 五行分析 -->
     <div class="result-section card" style="padding:24px;">
       <div class="result-section-title">五行命理辅助分析</div>
@@ -1307,6 +1349,12 @@
     <div class="result-section">
       <div class="result-section-title" style="margin-bottom:16px;">近期可执行行动建议</div>
       <div class="advice-grid" id="advice-grid"></div>
+    </div>
+
+    <!-- 真实案例库 -->
+    <div class="result-section" id="case-section">
+      <div class="result-section-title" style="margin-bottom:16px;">📋 真实案例库</div>
+      <div id="case-content"></div>
     </div>
 
     <!-- AI深度报告 -->
@@ -1421,6 +1469,12 @@ let aiConfig = {
   retrying: false
 };
 
+// 后端API配置（部署Vercel后启用，规则引擎上云）
+let apiConfig = {
+  endpoint: '', // 例如: https://ganyihuo.vercel.app/api/analyze
+  useBackend: false // 是否使用后端API（代替本地规则引擎）
+};
+
 const MODEL_CONFIG = {
   deepseek: {
     name: 'DeepSeek',
@@ -1450,7 +1504,204 @@ const LOADING_MESSAGES = [
   '整理深度职业报告…'
 ];
 
-function toggleAISettings() {
+// ===== 行业入行指南（内容壁垒核心） =====
+const INDUSTRY_GUIDES = {
+  tech: {
+    entry: ['自学编程3-6个月', '培训班转行', '大学计算机专业', '运维/测试起步'],
+    salary: { low: '6-8K', mid: '12-20K', high: '30K+' },
+    timeline: '3个月-1年入门',
+    guide: '互联网行业不看出身看能力。零基础转行建议从Web前端或Python自动化测试起步，B站免费教程+GitHub练手项目足够入门。35岁不是天花板，关键是持续学习。小城市可以先做远程外包积累经验，攒够项目再跳大厂。',
+    risk: '技术迭代快，需终身学习',
+    skills: ['编程基础', '逻辑思维', '自学能力'],
+    certs: '软考证书（评职称加分）'
+  },
+  edu: {
+    entry: ['考教师编', '培训机构讲师', '在线教育内容创作', '教育产品销售'],
+    salary: { low: '4-6K', mid: '8-15K', high: '20K+' },
+    timeline: '半年-2年（考编周期）',
+    guide: '教育行业分体制内和体制外两条路。考教师编需要教师资格证+当地统考，周期长但稳定。不想考编可以走在线教育路线：先在抖音/小红书做知识分享积累粉丝，再开付费课程变现。成人职业教育（如Python培训、考公辅导）需求旺盛，客单价高。',
+    risk: '双减后K12收缩，成人教育是增量',
+    skills: ['表达能力', '耐心', '课程设计'],
+    certs: '教师资格证'
+  },
+  finance: {
+    entry: ['银行校招', '证券/基金从业资格', '保险代理人', '理财规划师'],
+    salary: { low: '5-8K', mid: '10-25K', high: '50K+' },
+    timeline: '3个月-1年（考证周期）',
+    guide: '金融行业证书就是敲门砖。证券从业资格证门槛最低，考过就能进券商营业部。想往上走需要CFA/CPA，周期长但回报高。保险行业入行零门槛但淘汰率极高，适合销售能力强的人。银行体系最稳定但晋升慢，适合求稳的人。',
+    risk: '周期性波动大，业绩压力大',
+    skills: ['数据分析', '沟通谈判', '风险意识'],
+    certs: '证券从业、基金从业、CFA、CPA'
+  },
+  health: {
+    entry: ['医学/护理专业', '健康管理师', '养老护理', '医疗器械销售'],
+    salary: { low: '4-7K', mid: '8-18K', high: '30K+' },
+    timeline: '1-5年（取决于资质）',
+    guide: '老龄化是最大红利。有医学背景的走专业路线（医生/护士），没有专业背景的可以切入健康管理师、养老护理员、康复理疗师等新兴职业。健康管理师国家认可，考取周期约3-6个月。养老服务一线缺人严重，薪资水涨船高。',
+    risk: '专业门槛高，非法学医转行难',
+    skills: ['专业资质', '同理心', '体力'],
+    certs: '医师执照、护士资格证、健康管理师'
+  },
+  media: {
+    entry: ['自媒体从0开始', '短视频剪辑接单', '直播带货', '公众号/小红书运营'],
+    salary: { low: '3-5K', mid: '8-20K', high: '无上限' },
+    timeline: '1-6个月见成效',
+    guide: '内容行业是普通人最友好的创业赛道。一部手机就能开工。建议先选一个垂直方向（美食/旅游/职场/情感），日更坚持3个月，算法会给反馈。剪辑用剪映就够了，拍摄内容比设备重要。变现路径：平台分成→接广告→知识付费→带货，每个阶段都有对应的收入模型。',
+    risk: '竞争极度激烈，收入不稳定',
+    skills: ['内容创作', '网感', '坚持力'],
+    certs: '无硬性要求'
+  },
+  ecom: {
+    entry: ['闲鱼/拼多多开店', '一件代发', '抖音小店', '社区团购团长'],
+    salary: { low: '3-6K', mid: '10-30K', high: '100K+' },
+    timeline: '1个月开首单',
+    guide: '电商门槛最低但淘汰率也最高。建议从闲鱼或拼多多起步，成本几百块就能试水。选品是核心能力，会选品比会运营重要。新手建议做细分品类（如宠物用品、母婴小件），避开服装红海。抖音电商适合有内容能力的人，直播间就是你的店铺。',
+    risk: '价格战激烈，退货率高',
+    skills: ['选品眼光', '数据敏感', '服务意识'],
+    certs: '无硬性要求'
+  },
+  const: {
+    entry: ['施工员/监理', '房产中介', '装修设计', '物业/设施管理'],
+    salary: { low: '5-8K', mid: '10-18K', high: '25K+' },
+    timeline: '1-2年',
+    guide: '建筑行业在转型期，传统住宅开发在收缩，但旧改、城市更新、基建领域仍在招人。没有专业背景可以从房产中介或物业管家起步。持有建造师/造价师证书含金量高，挂靠一年也有稳定收入。装修行业手艺好的工人收入不输白领。',
+    risk: '受房地产周期影响大',
+    skills: ['空间感', '项目管理', '动手能力'],
+    certs: '建造师、造价工程师、监理工程师'
+  },
+  law: {
+    entry: ['法考→律所', '企业法务', '法律咨询/代书', '知识产权代理'],
+    salary: { low: '5-8K', mid: '12-30K', high: '80K+' },
+    timeline: '1-3年（法考+实习）',
+    guide: '法律是典型的高壁垒高回报行业。通过法考是硬门槛，没有法律背景可以考取法律职业资格（非法学+3年法律工作经验也可报考）。企业法务比律所轻松，适合追求工作生活平衡的人。知识产权代理是细分蓝海，商标/专利申请需求持续增长。',
+    risk: '法考难度大，实习期收入低',
+    skills: ['逻辑思维', '文字功底', '抗压能力'],
+    certs: '法律职业资格（法考）'
+  },
+  food: {
+    entry: ['小吃摊/外卖店', '加盟连锁', '社区食堂', '私房菜/烘焙'],
+    salary: { low: '4-8K', mid: '10-25K', high: '50K+' },
+    timeline: '1-3个月起步',
+    guide: '餐饮是现金流最好的创业赛道。建议从小成本测试开始：先摆摊或做社区团购验证品类，确认有回头客再租店面。选址比厨艺重要，人流量数据能用美团/饿了么查周边热力图。单品策略（只做1-2个招牌产品）成功率远高于大而全。',
+    risk: '体力消耗大，食品安全风险',
+    skills: ['吃苦耐劳', '成本控制', '服务态度'],
+    certs: '食品经营许可证、健康证'
+  },
+  logistics: {
+    entry: ['快递员/外卖骑手', '仓储管理员', '货运司机', '供应链调度'],
+    salary: { low: '5-8K', mid: '8-15K', high: '20K+' },
+    timeline: '即可上岗',
+    guide: '物流行业是就业最快的行业之一，几乎零门槛。快递/外卖适合短期过渡，长期发展建议往冷链物流、跨境物流、智能仓储方向走。持有B照以上的货运司机收入可观，月入过万很常见。供应链管理是物流人的晋升天花板，需要系统学习ERP/WMS。',
+    risk: '体力强度大，晋升通道窄',
+    skills: ['体力耐力', '路线规划', '责任心'],
+    certs: '驾驶证（B照以上加分）'
+  },
+  design: {
+    entry: ['在线课程自学', '接外包积累作品集', '设计工作室实习', '垂直平台接单'],
+    salary: { low: '4-7K', mid: '8-18K', high: '30K+' },
+    timeline: '3-6个月入门',
+    guide: '设计行业看作品集不看学历。UI/UX设计是目前薪资最高的方向，从Figma自学+临摹100个APP界面起步。不想学软件可以做品牌策划、文案设计等非技术设计岗位。自由设计师收入天花板高但需要自建获客管道，建议先在猪八戒/站酷等平台接单积累客户。',
+    risk: 'AI设计工具冲击入门级岗位',
+    skills: ['审美能力', '软件操作', '沟通理解'],
+    certs: '无硬性要求，Adobe认证加分'
+  },
+  agri: {
+    entry: ['家庭农场', '农村电商', '乡村旅游/民宿', '智慧农业技术'],
+    salary: { low: '3-6K', mid: '8-20K', high: '50K+' },
+    timeline: '半年-1年见成效',
+    guide: '新农村是政策红利最大的赛道。种植养殖需要技术积累，建议先到成熟农场打工学习再自己干。农村电商是最轻量的切入方式：帮村里人卖特产，一部手机+快递就能启动。乡村旅游/民宿适合有闲置房产或靠近景区的地区，投入相对大但回报周期短。',
+    risk: '靠天吃饭，自然灾害风险',
+    skills: ['动手能力', '市场嗅觉', '耐心'],
+    certs: '无硬性要求'
+  }
+};
+
+// ===== 真实案例库（匿名化） =====
+const CASE_LIBRARY = [
+  {
+    industry: 'media',
+    story: '29岁·北方二线城市·原银行柜员 → 现抖音职场博主·6个月2万粉',
+    detail: '辞掉稳定工作后零基础做号，每天下班后花2小时剪视频。前3个月数据惨淡，第4个月一条"银行柜员的一天"爆了50万播放。现在靠接广告+付费社群月入8000+，虽然比银行少但生活自由多了。',
+    insight: '转行不是一次跳到位，而是用业余时间先测试，有结果再All in。'
+  },
+  {
+    industry: 'ecom',
+    story: '34岁·东北三线城市·原工厂工人 → 现拼多多店主·年入16万',
+    detail: '工厂裁员后拿3万赔偿金试水电商。先从1688找本地优势品类（东北木耳/榛子），在拼多多开C店，前2个月亏了4000块测品，第3个月找到爆品后月销3000单。现在雇了1个打包工，每天发100-200单。',
+    insight: '选品要利用家乡资源优势，别跟风卖大众品。小城市人工成本低是天然优势。'
+  },
+  {
+    industry: 'tech',
+    story: '27岁·中部省会·原超市理货员 → 现前端开发工程师·月薪12K',
+    detail: '大专学历，在超市干了3年觉得没前途，报了线上培训班每天学4小时，6个月后做出3个项目放GitHub上。前后面了20多家公司，第15家给了offer。入职后发现培训班学的东西够用，边做边学进步更快。',
+    insight: '互联网行业更看重你能做什么而不是你从哪来。项目经验比学历好用十倍。'
+  },
+  {
+    industry: 'food',
+    story: '41岁·南方地级市·原出租车司机 → 现社区早餐店主·月利润1.5万',
+    detail: '跑滴滴跑了5年身体吃不消，在小区门口盘了个早餐档口。主打现磨豆浆+肉夹馍，凌晨4点出摊，上午10点收工。客单价8块的早餐，一天卖150份左右。成本控制到位，肉和面从批发市场拿，毛利能做到65%。',
+    insight: '餐饮不做高大上，就做小区门口的刚需。味道不必惊艳，稳定+便利就有人天天来。'
+  },
+  {
+    industry: 'design',
+    story: '24岁·一线城市·原行政文员 → 现自由UI设计师·月均收入1.2万',
+    detail: '对办公室行政工作厌倦，利用周末学Figma和设计理论，在站酷发了30多篇临摹作品。第5个月接到第一个付费客户（朋友介绍的APP页面设计），做完后被客户推荐了3个新客户。现在完全靠转介绍获客，收入不稳定但自由度极高。',
+    insight: '设计自由职业的核心不是能力多强，而是让客户信任你。前几个项目宁可少收钱也要把口碑做出来。'
+  },
+  {
+    industry: 'edu',
+    story: '36岁·东北二线·原企业培训师 → 现成人Python培训讲师·月入2万+',
+    detail: '自学编程2年后转型做编程培训，发现成人学编程的最大痛点是"学完不会用"。设计了"30天做一个能上线的小程序"课程，和本地成人教育机构合作分成。一个班15人，每人收2980，开了5期基本满员。',
+    insight: '教育培训要做细分到极致。不是"教编程"而是"教零基础30天做小程序"，越具体越好卖。'
+  }
+];
+
+// ===== 指南和案例渲染 =====
+function renderGuide(topIndustry) {
+  const guideEl = document.getElementById('guide-content');
+  const top2 = industries_data ? industries_data[1] : null;
+  const top3 = industries_data ? industries_data[2] : null;
+
+  const guidesToShow = [topIndustry];
+  if (top2 && top2.key !== topIndustry.key) guidesToShow.push(top2);
+  if (top3 && top3.key !== topIndustry.key && top3.key !== top2.key) guidesToShow.push(top3);
+
+  guideEl.innerHTML = guidesToShow.map(ind => {
+    const g = INDUSTRY_GUIDES[ind.key];
+    if (!g) return '';
+    return `
+    <div class="guide-card">
+      <div class="guide-card-top">
+        <span class="guide-card-title">${ind.name} · 入行指南</span>
+        <span class="guide-card-entry">${g.entry.slice(0, 3).join(' / ')}</span>
+      </div>
+      <div class="guide-card-body">${g.guide}</div>
+      <div class="guide-card-meta">
+        <span class="guide-meta-item">💰 ${g.salary.low}-${g.salary.high}</span>
+        <span class="guide-meta-item">⏱ ${g.timeline}</span>
+        ${g.certs !== '无硬性要求' ? `<span class="guide-meta-item">📜 ${g.certs}</span>` : ''}
+        <span class="guide-meta-item warn">⚠ ${g.risk}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCaseLibrary(topIndustryKey) {
+  const caseEl = document.getElementById('case-content');
+  const matches = CASE_LIBRARY.filter(c => c.industry === topIndustryKey);
+  const others = CASE_LIBRARY.filter(c => c.industry !== topIndustryKey);
+  const show = [...matches, ...others].slice(0, 3);
+
+  caseEl.innerHTML = show.map(c => `
+    <div class="case-card">
+      <div class="case-card-body"><strong>${c.story}</strong><br>${c.detail}</div>
+      <div class="case-card-insight">💡 ${c.insight}</div>
+    </div>
+  `).join('') || '<div style="color:var(--text-muted);font-size:13px;">更多案例收集中…</div>';
+}
+
+// 存储行业数据供指南渲染用
+let industries_data = null;
   document.getElementById('ai-settings').classList.toggle('open');
 }
 
@@ -1507,6 +1758,7 @@ function onAPIKeyChange() {
 
 // Init on page load
 (function() {
+  // Load AI model config
   const savedModel = localStorage.getItem('ganyihuo_model');
   if (savedModel && MODEL_CONFIG[savedModel]) {
     aiConfig.model = savedModel;
@@ -1522,6 +1774,36 @@ function onAPIKeyChange() {
         b.classList.add('active');
       }
     });
+    if (savedKey) {
+      document.getElementById('api-key-section').style.display = 'block';
+      document.getElementById('f-api-key').value = savedKey;
+    }
+  }
+
+  // Load API endpoint config
+  const savedEndpoint = localStorage.getItem('ganyihuo_api_endpoint');
+  if (savedEndpoint) {
+    apiConfig.endpoint = savedEndpoint;
+    apiConfig.useBackend = localStorage.getItem('ganyihuo_api_use_backend') === 'true';
+    document.getElementById('f-api-endpoint').value = savedEndpoint;
+    document.getElementById('f-use-backend').checked = apiConfig.useBackend;
+  }
+})();
+
+function onAPIEndpointChange() {
+  const ep = document.getElementById('f-api-endpoint').value.trim();
+  apiConfig.endpoint = ep;
+  if (ep) {
+    localStorage.setItem('ganyihuo_api_endpoint', ep);
+  } else {
+    localStorage.removeItem('ganyihuo_api_endpoint');
+  }
+}
+
+function onUseBackendChange() {
+  apiConfig.useBackend = document.getElementById('f-use-backend').checked;
+  localStorage.setItem('ganyihuo_api_use_backend', apiConfig.useBackend ? 'true' : 'false');
+}
     if (savedModel !== 'none') {
       document.getElementById('api-key-section').style.display = 'block';
       document.getElementById('f-api-key').value = savedKey || '';
@@ -1610,6 +1892,28 @@ function validateInput(str, maxLen) {
 }
 
 // ===== COLLECT FORM DATA =====
+// ===== CALL BACKEND API (规则引擎上云) =====
+async function callBackendAPI(data) {
+  const resp = await fetch(apiConfig.endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+    signal: AbortSignal.timeout(15000)
+  });
+
+  if (!resp.ok) {
+    const errText = await resp.text();
+    throw new Error(`API请求失败 (${resp.status}): ${errText.substring(0, 100)}`);
+  }
+
+  const result = await resp.json();
+  if (!result.success) {
+    throw new Error(result.error || '分析失败');
+  }
+
+  return result;
+}
+
 function collectFormData() {
   const nameRaw = document.getElementById('f-name').value || '你';
   const name = validateInput(nameRaw, 30);
@@ -1646,12 +1950,37 @@ async function generateResult() {
   genBtn.disabled = true;
   genBtn.style.opacity = '0.7';
 
-  // Save model preference
+  // Save preferences
   localStorage.setItem('ganyihuo_model', aiConfig.model);
+  if (apiConfig.endpoint) localStorage.setItem('ganyihuo_api_endpoint', apiConfig.endpoint);
 
-  // 1. Always run rule engine
-  const industries = runRuleEngine(data);
-  renderBasicResult(data, industries);
+  let industries;
+
+  // 1. Run analysis: backend API if configured, otherwise local rule engine
+  if (apiConfig.useBackend && apiConfig.endpoint) {
+    // === 后端API模式：规则引擎在云端，前端只是视图层 ===
+    try {
+      const apiResult = await callBackendAPI(data);
+      industries = apiResult.industries.map(ind => ({
+        ...ind,
+        wx_data: {
+          mu: apiResult.wuxing.mu, huo: apiResult.wuxing.huo,
+          tu: apiResult.wuxing.tu, jin: apiResult.wuxing.jin, shui: apiResult.wuxing.shui,
+          dominant: apiResult.wuxing.dominant
+        }
+      }));
+      renderBasicResult(data, industries);
+    } catch (err) {
+      console.error('Backend API failed, falling back to local engine:', err.message);
+      // Fallback to local
+      industries = runRuleEngine(data);
+      renderBasicResult(data, industries);
+    }
+  } else {
+    // === 本地模式 ===
+    industries = runRuleEngine(data);
+    renderBasicResult(data, industries);
+  }
 
   // 2. If AI enabled, run AI analysis
   if (aiConfig.enabled && aiConfig.model !== 'none' && aiConfig.apiKey) {
@@ -1798,6 +2127,10 @@ function renderBasicResult(data, industries) {
   const statusMap = { graduate: '应届求职者', jobless: '在职转型者', unemployed: '转型待业者', startup: '创业探索者' };
   const riskMap = { low: '稳健型', mid: '进取型', high: '冒险型' };
   const wx = calcWuxing(data.birthYear, data.birthMonth);
+  const topIndustry = industries[0];
+
+  // 存储供指南渲染使用
+  industries_data = industries;
 
   document.getElementById('result-name').textContent = `Hi ${name}，这是你的职业路线图`;
   document.getElementById('result-tagline').textContent = `${age}岁·${city}·${statusMap[data.status]}·${riskMap[data.risk]}`;
@@ -1856,6 +2189,11 @@ function renderBasicResult(data, industries) {
       <p>${a.text}</p>
     </div>
   `).join('');
+
+  // 渲染入行指南
+  renderGuide(topIndustry);
+  // 渲染真实案例库
+  renderCaseLibrary(topIndustry.key);
 }
 
 // ===== AI API CALL =====
@@ -2080,6 +2418,14 @@ function clearAllData() {
   const badge = document.getElementById('ai-status-badge');
   badge.textContent = '未启用';
   badge.style.background = '#9CA3AF';
+
+  // Clear API endpoint config
+  apiConfig.endpoint = '';
+  apiConfig.useBackend = false;
+  const fep = document.getElementById('f-api-endpoint');
+  if (fep) fep.value = '';
+  const fub = document.getElementById('f-use-backend');
+  if (fub) fub.checked = false;
 
   const consent = document.getElementById('privacy-consent');
   if (consent) consent.checked = false;
