@@ -1,0 +1,1991 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>干个活儿 — 职业方向智能决策平台</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #2563EB;
+      --primary-dark: #1E40AF;
+      --primary-light: #EFF6FF;
+      --primary-mid: #93C5FD;
+      --teal: #0F766E;
+      --teal-light: #CCFBF1;
+      --amber: #D97706;
+      --amber-light: #FEF3C7;
+      --coral: #DC2626;
+      --coral-light: #FEE2E2;
+      --purple: #7C3AED;
+      --purple-light: #EDE9FE;
+      --green: #059669;
+      --green-light: #D1FAE5;
+      --text: #111827;
+      --text-muted: #6B7280;
+      --text-hint: #9CA3AF;
+      --border: rgba(0,0,0,0.1);
+      --bg: #F9FAFB;
+      --card: #FFFFFF;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.08);
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+      font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ===== NAVIGATION ===== */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 20px; color: var(--primary); text-decoration: none; }
+    .nav-logo span { font-size: 13px; font-weight: 400; color: var(--text-muted); border-left: 1px solid var(--border); padding-left: 8px; margin-left: 4px; }
+    .nav-links { display: flex; gap: 4px; }
+    .nav-link { padding: 6px 14px; border-radius: 8px; font-size: 14px; color: var(--text-muted); cursor: pointer; transition: all 0.2s; border: none; background: none; }
+    .nav-link:hover { background: var(--primary-light); color: var(--primary); }
+    .nav-cta { background: var(--primary); color: #fff; padding: 8px 20px; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+    .nav-cta:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+    /* ===== PAGES ===== */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ===== HERO ===== */
+    .hero {
+      padding: 80px 24px 60px;
+      text-align: center;
+      background: linear-gradient(160deg, #EFF6FF 0%, #F9FAFB 50%, #EDE9FE 100%);
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 800px 400px at 50% -100px, rgba(37,99,235,0.08), transparent);
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #fff; border: 1px solid var(--primary-mid);
+      color: var(--primary); font-size: 12px; font-weight: 600;
+      padding: 4px 12px; border-radius: 20px; margin-bottom: 20px;
+    }
+    .hero-badge::before { content: '🔥'; }
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 52px);
+      font-weight: 900; line-height: 1.15;
+      color: var(--text); margin-bottom: 16px;
+    }
+    .hero h1 em { color: var(--primary); font-style: normal; }
+    .hero p.subtitle {
+      font-size: clamp(15px, 2.5vw, 18px);
+      color: var(--text-muted); max-width: 600px; margin: 0 auto 32px;
+      line-height: 1.7;
+    }
+    .hero-data-strip {
+      display: flex; justify-content: center; gap: 32px; flex-wrap: wrap;
+      margin-bottom: 36px;
+    }
+    .hero-stat {
+      text-align: center;
+    }
+    .hero-stat-num { font-size: 28px; font-weight: 800; color: var(--primary); }
+    .hero-stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--primary); color: #fff;
+      padding: 14px 32px; border-radius: 40px;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      border: none; transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(37,99,235,0.3);
+    }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(37,99,235,0.4); }
+    .btn-secondary {
+      background: #fff; color: var(--text);
+      padding: 14px 32px; border-radius: 40px;
+      font-size: 16px; font-weight: 600; cursor: pointer;
+      border: 1px solid var(--border); transition: all 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+
+    /* ===== SECTION ===== */
+    .section { padding: 64px 24px; max-width: 1100px; margin: 0 auto; }
+    .section-label { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; }
+    .section-title { font-size: clamp(22px, 4vw, 36px); font-weight: 800; margin-bottom: 12px; }
+    .section-sub { font-size: 16px; color: var(--text-muted); max-width: 600px; line-height: 1.7; }
+
+    /* ===== DATA SHOWCASE ===== */
+    .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-top: 40px; }
+    .data-card {
+      background: var(--card); border-radius: var(--radius); padding: 24px;
+      border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+    }
+    .data-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    .data-card-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 16px; }
+    .data-card-num { font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 6px; }
+    .data-card-label { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .data-card-source { font-size: 11px; color: var(--text-hint); margin-top: 8px; }
+
+    /* ===== USER TYPES ===== */
+    .user-types { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 40px; }
+    .user-card {
+      background: var(--card); border-radius: var(--radius); padding: 28px;
+      border: 1px solid var(--border); position: relative; overflow: hidden;
+      cursor: pointer; transition: all 0.25s;
+    }
+    .user-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    .user-card-badge {
+      position: absolute; top: 16px; right: 16px;
+      font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px;
+    }
+    .user-card-icon { font-size: 40px; margin-bottom: 16px; }
+    .user-card h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+    .user-card p { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px; }
+    .user-card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+
+    /* ===== SERVICES ===== */
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 40px; }
+    .service-card {
+      background: var(--card); border-radius: var(--radius); padding: 24px;
+      border: 1px solid var(--border); position: relative;
+    }
+    .service-card.featured { border-color: var(--primary); }
+    .service-card.featured::before { content: '最受欢迎'; position: absolute; top: -1px; right: 20px; background: var(--primary); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 0 0 8px 8px; }
+    .service-icon { font-size: 32px; margin-bottom: 12px; }
+    .service-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+    .service-price { font-size: 22px; font-weight: 800; color: var(--primary); margin: 8px 0; }
+    .service-price span { font-size: 14px; font-weight: 400; color: var(--text-muted); }
+    .service-features { list-style: none; margin: 12px 0 16px; }
+    .service-features li { font-size: 13px; color: var(--text-muted); padding: 4px 0; display: flex; gap: 8px; }
+    .service-features li::before { content: '✓'; color: var(--green); font-weight: 700; }
+    .service-btn { width: 100%; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+    .service-btn-primary { background: var(--primary); color: #fff; }
+    .service-btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
+    .service-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    /* ===== MEMBERSHIP ===== */
+    .member-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-top: 40px; }
+    .member-card {
+      border-radius: var(--radius); padding: 28px; position: relative; overflow: hidden;
+    }
+    .member-card.free { background: var(--bg); border: 2px solid var(--border); }
+    .member-card.basic { background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 2px solid var(--primary-mid); }
+    .member-card.mid { background: linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%); border: 2px solid #A78BFA; }
+    .member-card.premium { background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border: 2px solid #FBBF24; }
+    .member-tag { font-size: 10px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; }
+    .member-name { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+    .member-price { font-size: 28px; font-weight: 900; margin: 12px 0 4px; }
+    .member-price sub { font-size: 14px; font-weight: 400; }
+    .member-cycle { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+    .member-features { list-style: none; }
+    .member-features li { font-size: 13px; padding: 5px 0; display: flex; gap: 8px; align-items: flex-start; line-height: 1.4; }
+    .member-features li .icon { flex-shrink: 0; }
+    .member-btn { width: 100%; padding: 11px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; margin-top: 20px; transition: all 0.2s; }
+    .member-btn:hover { transform: translateY(-2px); }
+
+    /* ===== ASSESSMENT FORM ===== */
+    .assessment-wrapper { max-width: 760px; margin: 0 auto; padding: 24px; }
+    .assessment-header { text-align: center; margin-bottom: 40px; }
+    .step-indicator { display: flex; justify-content: center; gap: 0; margin-bottom: 32px; }
+    .step-item { display: flex; align-items: center; gap: 0; }
+    .step-dot {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700;
+      border: 2px solid var(--border); background: #fff;
+      color: var(--text-muted); transition: all 0.3s;
+    }
+    .step-dot.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .step-dot.done { background: var(--green); border-color: var(--green); color: #fff; }
+    .step-line { width: 60px; height: 2px; background: var(--border); transition: all 0.3s; }
+    .step-line.done { background: var(--green); }
+    .step-label { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 6px; white-space: nowrap; }
+
+    .form-step { display: none; }
+    .form-step.active { display: block; }
+    .form-step h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+    .form-step .step-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; }
+
+    .form-group { margin-bottom: 22px; }
+    .form-label { font-size: 14px; font-weight: 600; margin-bottom: 8px; display: block; }
+    .form-label span { font-size: 12px; color: var(--text-muted); font-weight: 400; margin-left: 6px; }
+    .form-input {
+      width: 100%; padding: 12px 14px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 15px; color: var(--text);
+      background: #fff; outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus { border-color: var(--primary); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .tag-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .skill-tag {
+      padding: 7px 14px; border-radius: 20px;
+      font-size: 13px; cursor: pointer;
+      border: 1.5px solid var(--border); background: #fff;
+      color: var(--text-muted); transition: all 0.2s; user-select: none;
+    }
+    .skill-tag:hover { border-color: var(--primary); color: var(--primary); }
+    .skill-tag.selected { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    .radio-group { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+    .radio-opt {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 16px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: #fff;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .radio-opt:hover { border-color: var(--primary-mid); background: var(--primary-light); }
+    .radio-opt.selected { border-color: var(--primary); background: var(--primary-light); }
+    .radio-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; margin-top: 1px; transition: all 0.2s; }
+    .radio-opt.selected .radio-dot { border-color: var(--primary); background: var(--primary); box-shadow: inset 0 0 0 3px #fff; }
+    .radio-text strong { font-size: 14px; display: block; margin-bottom: 2px; }
+    .radio-text small { font-size: 12px; color: var(--text-muted); }
+
+    .slider-wrap { margin-top: 10px; }
+    .slider-row { display: flex; align-items: center; gap: 12px; }
+    .range-slider { flex: 1; height: 6px; border-radius: 3px; appearance: none; background: var(--border); outline: none; }
+    .range-slider::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; }
+    .slider-val { font-weight: 700; font-size: 15px; color: var(--primary); min-width: 60px; text-align: right; }
+
+    .step-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
+    .step-prev { background: #fff; color: var(--text); padding: 11px 24px; border-radius: 8px; border: 1.5px solid var(--border); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .step-prev:hover { border-color: var(--text-muted); }
+    .step-next { background: var(--primary); color: #fff; padding: 11px 28px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: all 0.2s; }
+    .step-next:hover { background: var(--primary-dark); }
+    .step-hint { font-size: 12px; color: var(--text-hint); }
+
+    /* ===== RESULT PAGE ===== */
+    .result-wrapper { max-width: 840px; margin: 0 auto; padding: 24px; }
+    .result-hero {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--purple) 100%);
+      color: #fff; border-radius: var(--radius); padding: 32px;
+      text-align: center; margin-bottom: 24px;
+    }
+    .result-hero h2 { font-size: 24px; font-weight: 900; margin-bottom: 6px; }
+    .result-hero p { font-size: 14px; opacity: 0.85; margin-bottom: 16px; }
+    .result-score-ring { display: inline-flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.15); border-radius: 50%; width: 100px; height: 100px; justify-content: center; }
+    .result-score-num { font-size: 36px; font-weight: 900; line-height: 1; }
+    .result-score-label { font-size: 11px; opacity: 0.8; }
+    .result-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 16px; }
+    .result-tag { background: rgba(255,255,255,0.2); color: #fff; font-size: 12px; padding: 4px 12px; border-radius: 20px; }
+
+    .result-section { margin-bottom: 24px; }
+    .result-section-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .result-section-title::before { content: ''; width: 4px; height: 16px; background: var(--primary); border-radius: 2px; }
+
+    .industry-item { margin-bottom: 14px; }
+    .industry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .industry-name { font-size: 15px; font-weight: 700; }
+    .industry-score { font-size: 15px; font-weight: 800; color: var(--primary); }
+    .progress-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 4px; transition: width 1.2s ease; }
+    .industry-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; margin-top: 4px; }
+
+    .advice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+    .advice-item { background: var(--card); border-radius: 12px; padding: 18px; border: 1px solid var(--border); }
+    .advice-item-icon { font-size: 24px; margin-bottom: 10px; }
+    .advice-item h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .advice-item p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+    .wuxing-bars { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 8px; }
+    .wuxing-item { text-align: center; }
+    .wuxing-bar-wrap { height: 80px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 6px; }
+    .wuxing-bar { width: 32px; border-radius: 4px 4px 0 0; transition: height 1.2s ease; }
+    .wuxing-label { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+    .wuxing-pct { font-size: 11px; color: var(--text-muted); }
+
+    .upsell-card {
+      background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+      border: 1.5px solid #FDE68A; border-radius: var(--radius);
+      padding: 24px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+    }
+    .upsell-card-text h3 { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+    .upsell-card-text p { font-size: 14px; color: var(--text-muted); }
+    .upsell-card-cta { flex-shrink: 0; }
+    .upsell-btn { background: var(--amber); color: #fff; padding: 11px 24px; border-radius: 8px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+    .upsell-btn:hover { background: #B45309; }
+
+    /* ===== PRICING PAGE ===== */
+    .pricing-wrapper { max-width: 1000px; margin: 0 auto; padding: 24px; }
+    .pricing-toggle { display: flex; justify-content: center; gap: 0; background: var(--bg); border: 1.5px solid var(--border); border-radius: 30px; padding: 4px; margin: 24px auto; width: fit-content; }
+    .pricing-toggle-btn { padding: 8px 20px; border-radius: 26px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--text-muted); transition: all 0.2s; }
+    .pricing-toggle-btn.active { background: #fff; color: var(--text); box-shadow: var(--shadow-sm); }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #111827; color: rgba(255,255,255,0.6);
+      padding: 48px 24px 24px; text-align: center;
+      font-size: 13px;
+    }
+    footer .footer-logo { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+    footer .footer-tagline { margin-bottom: 32px; }
+    footer .footer-links { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+    footer .footer-links a { color: rgba(255,255,255,0.5); text-decoration: none; }
+    footer .footer-links a:hover { color: #fff; }
+    footer .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 20px; }
+
+    /* ===== UTILS ===== */
+    .card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+    .chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; padding: 4px 10px; border-radius: 20px; font-weight: 500; }
+
+    /* scroll reveal */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .reveal { animation: fadeUp 0.5s ease both; }
+
+    /* responsive */
+    /* ===== AI ENGINE ===== */
+    .ai-settings-toggle {
+      display: block; width: 100%; background: none; border: none; cursor: pointer;
+      padding: 12px 16px; border-radius: 10px;
+      font-size: 13px; color: var(--text-muted); text-align: center;
+      margin-bottom: 20px; transition: all 0.2s;
+    }
+    .ai-settings-toggle:hover { color: var(--primary); background: var(--primary-light); }
+    .ai-settings-toggle .ai-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: linear-gradient(135deg, #7C3AED, #A78BFA);
+      color: #fff; font-size: 11px; font-weight: 600;
+      padding: 3px 10px; border-radius: 20px; margin-left: 6px;
+    }
+    .ai-settings-panel {
+      display: none; background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: 20px; margin-bottom: 24px;
+    }
+    .ai-settings-panel.open { display: block; }
+    .ai-model-selector { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .ai-model-btn {
+      flex: 1; min-width: 120px; padding: 12px 14px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: #fff; cursor: pointer;
+      text-align: center; font-size: 13px; font-weight: 600;
+      transition: all 0.2s; color: var(--text);
+    }
+    .ai-model-btn:hover { border-color: var(--primary-mid); }
+    .ai-model-btn.active { border-color: #7C3AED; background: #EDE9FE; color: #5B21B6; }
+    .ai-model-btn .model-name { display: block; font-size: 14px; margin-bottom: 2px; }
+    .ai-model-btn .model-tag { font-size: 11px; color: var(--text-muted); font-weight: 400; }
+    .ai-model-btn.active .model-tag { color: #7C3AED; }
+
+    .ai-loading {
+      display: none; align-items: center; gap: 12px;
+      padding: 20px; background: linear-gradient(135deg, #EDE9FE, #EFF6FF);
+      border-radius: var(--radius); margin-top: 24px;
+    }
+    .ai-loading.active { display: flex; }
+    .ai-loading-dots { display: flex; gap: 6px; }
+    .ai-loading-dots span {
+      width: 8px; height: 8px; border-radius: 50%; background: #7C3AED;
+      animation: aiPulse 1.4s ease infinite both;
+    }
+    .ai-loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .ai-loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes aiPulse {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1.2); }
+    }
+    .ai-loading-text { font-size: 14px; color: #5B21B6; font-weight: 500; }
+
+    .ai-report {
+      background: linear-gradient(135deg, #fff 0%, #FAF5FF 100%);
+      border: 1.5px solid #DDD6FE; border-radius: var(--radius);
+      padding: 28px; margin-top: 24px;
+    }
+    .ai-report-label {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: linear-gradient(135deg, #7C3AED, #A78BFA);
+      color: #fff; font-size: 12px; font-weight: 700;
+      padding: 4px 14px; border-radius: 20px; margin-bottom: 24px;
+    }
+    .ai-section { margin-bottom: 28px; }
+    .ai-section:last-child { margin-bottom: 0; }
+    .ai-section-title {
+      font-size: 17px; font-weight: 800; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+      color: #3B0764;
+    }
+    .ai-section-title::before { content: ''; width: 4px; height: 18px; background: #7C3AED; border-radius: 2px; }
+    .ai-section-text { font-size: 14px; color: var(--text-muted); line-height: 1.8; }
+    .ai-section-text strong { color: var(--text); }
+    .ai-section-text p { margin-bottom: 10px; }
+
+    .ai-risks { list-style: none; }
+    .ai-risks li {
+      font-size: 14px; padding: 8px 12px; margin-bottom: 6px;
+      border-radius: 8px; background: #FEE2E2; color: #991B1B;
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+    .ai-risks li::before { content: '⚠️'; flex-shrink: 0; }
+    .ai-risks li.low-risk { background: #D1FAE5; color: #065F46; }
+    .ai-risks li.low-risk::before { content: '✅'; }
+
+    .ai-timeline { list-style: none; }
+    .ai-timeline li {
+      font-size: 14px; padding: 10px 0 10px 24px;
+      border-left: 3px solid #DDD6FE; color: var(--text-muted);
+      line-height: 1.6; position: relative;
+    }
+    .ai-timeline li::before {
+      content: ''; position: absolute; left: -7px; top: 15px;
+      width: 11px; height: 11px; border-radius: 50%;
+      background: #7C3AED; border: 2px solid #fff;
+    }
+    .ai-timeline li .phase { display: block; font-weight: 700; color: #3B0764; margin-bottom: 2px; }
+
+    .ai-score-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+    .ai-score-card {
+      background: #fff; border: 1px solid #DDD6FE; border-radius: 12px;
+      padding: 16px; text-align: center;
+    }
+    .ai-score-card .num {
+      font-size: 32px; font-weight: 900;
+      background: linear-gradient(135deg, #7C3AED, #A78BFA);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .ai-score-card .label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    .ai-error {
+      display: none; padding: 16px; background: #FEE2E2; border: 1.5px solid #FCA5A5;
+      border-radius: 10px; color: #991B1B; font-size: 14px;
+    }
+    .ai-error.active { display: block; }
+    .ai-error button {
+      margin-top: 8px; background: #DC2626; color: #fff; border: none;
+      padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 13px;
+    }
+
+    @media (max-width: 640px) {
+      .form-row { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .step-line { width: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="nav">
+  <a class="nav-logo" href="#" onclick="showPage('home')">
+    🔧 干个活儿
+    <span>职业决策平台</span>
+  </a>
+  <div class="nav-links">
+    <button class="nav-link" onclick="showPage('home')">首页</button>
+    <button class="nav-link" onclick="showPage('services')">服务</button>
+    <button class="nav-link" onclick="showPage('pricing')">会员</button>
+    <button class="nav-link" onclick="showPage('assessment')">免费测评</button>
+  </div>
+  <button class="nav-cta" onclick="showPage('assessment')">免费开始 →</button>
+</nav>
+
+<!-- ===== HOME PAGE ===== -->
+<div id="page-home" class="page active">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-badge">2026年最新就业数据支持</div>
+    <h1>找不到方向？<br><em>我们帮你找</em></h1>
+    <p class="subtitle">
+      无论你是应届毕业生、被迫转行的中年人，还是想自己干一票的创业者——<br>
+      输入你的经历，我们给你一条看得见的路。
+    </p>
+
+    <!-- 真实数据条 -->
+    <div class="hero-data-strip">
+      <div class="hero-stat">
+        <div class="hero-stat-num">1222万</div>
+        <div class="hero-stat-label">2025届高校毕业生</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">18.9%</div>
+        <div class="hero-stat-label">青年失业率峰值</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">60%+</div>
+        <div class="hero-stat-label">岗位卡死35岁</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">千亿</div>
+        <div class="hero-stat-label">职业咨询市场规模</div>
+      </div>
+    </div>
+
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="showPage('assessment')">🎯 免费获取职业报告</button>
+      <button class="btn-secondary" onclick="showPage('services')">查看付费服务</button>
+    </div>
+  </div>
+
+  <!-- 市场数据 -->
+  <div class="section">
+    <div class="section-label">真实数据</div>
+    <h2 class="section-title">你不是一个人在困惑</h2>
+    <p class="section-sub">这些数字背后，是每一个在职场迷雾中挣扎的真实个体。</p>
+
+    <div class="data-grid">
+      <div class="data-card" style="border-left: 4px solid #DC2626;">
+        <div class="data-card-icon" style="background:#FEE2E2;">🎓</div>
+        <div class="data-card-num" style="color:#DC2626;">1222万</div>
+        <div class="data-card-label">2025年高校毕业生<br>较10年前增长262%</div>
+        <div class="data-card-source">来源：教育部 2025</div>
+      </div>
+      <div class="data-card" style="border-left: 4px solid #D97706;">
+        <div class="data-card-icon" style="background:#FEF3C7;">⚡</div>
+        <div class="data-card-num" style="color:#D97706;">72%</div>
+        <div class="data-card-label">35-45岁被裁员者<br>陷入"自我价值怀疑"</div>
+        <div class="data-card-source">来源：中年职场生存报告 2025</div>
+      </div>
+      <div class="data-card" style="border-left: 4px solid #7C3AED;">
+        <div class="data-card-icon" style="background:#EDE9FE;">📊</div>
+        <div class="data-card-num" style="color:#7C3AED;">47.3亿</div>
+        <div class="data-card-label">2024年简历/求职服务市场<br>同比增长8.6%</div>
+        <div class="data-card-source">来源：行业研究机构 2025</div>
+      </div>
+      <div class="data-card" style="border-left: 4px solid #059669;">
+        <div class="data-card-icon" style="background:#D1FAE5;">🚀</div>
+        <div class="data-card-num" style="color:#059669;">千亿</div>
+        <div class="data-card-label">职业规划咨询市场规模<br>年复合增长率15%+</div>
+        <div class="data-card-source">来源：职业咨询市场报告 2025</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 我们服务谁 -->
+  <div style="background:#fff; padding: 24px 0;">
+    <div class="section">
+      <div class="section-label">目标用户</div>
+      <h2 class="section-title">你是其中哪一类？</h2>
+      <p class="section-sub">三类核心用户群，每种困境我们都有专属方案。</p>
+      <div class="user-types">
+        <div class="user-card" onclick="showPage('assessment')">
+          <div class="user-card-badge" style="background:#DBEAFE;color:#1D4ED8;">最多用户</div>
+          <div class="user-card-icon">🎓</div>
+          <h3>大学生 / 应届生</h3>
+          <p>海投简历没回音，不知道专业能干什么，对未来感到茫然和焦虑。</p>
+          <div class="user-card-tags">
+            <span class="tag" style="background:#EFF6FF;color:#1D4ED8;">校园转职场</span>
+            <span class="tag" style="background:#D1FAE5;color:#065F46;">技能盘点</span>
+            <span class="tag" style="background:#EDE9FE;color:#5B21B6;">行业匹配</span>
+          </div>
+        </div>
+        <div class="user-card" onclick="showPage('assessment')">
+          <div class="user-card-badge" style="background:#FEE2E2;color:#991B1B;">痛点最深</div>
+          <div class="user-card-icon">💼</div>
+          <h3>中年失业 / 被迫转行</h3>
+          <p>被公司裁员，年龄卡在35+，过往经验不知道如何变现，家庭压力巨大。</p>
+          <div class="user-card-tags">
+            <span class="tag" style="background:#FEE2E2;color:#991B1B;">跨行转型</span>
+            <span class="tag" style="background:#FEF3C7;color:#92400E;">经验变现</span>
+            <span class="tag" style="background:#D1FAE5;color:#065F46;">副业方向</span>
+          </div>
+        </div>
+        <div class="user-card" onclick="showPage('assessment')">
+          <div class="user-card-badge" style="background:#FEF3C7;color:#92400E;">高客单价</div>
+          <div class="user-card-icon">🔥</div>
+          <h3>想创业 / 不知从何下手</h3>
+          <p>有想法、有资源、有积蓄，但不知道自己适合哪个赛道，怕踩坑亏本。</p>
+          <div class="user-card-tags">
+            <span class="tag" style="background:#FFFBEB;color:#92400E;">赛道筛选</span>
+            <span class="tag" style="background:#EDE9FE;color:#5B21B6;">风险评估</span>
+            <span class="tag" style="background:#DBEAFE;color:#1E40AF;">资源匹配</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 核心功能 -->
+  <div class="section">
+    <div class="section-label">核心能力</div>
+    <h2 class="section-title">我们怎么帮你找到方向</h2>
+    <p class="section-sub">不是随机给你推几个职业，而是通过多维度数据交叉分析，给你一份真正有据可查的决策报告。</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;margin-top:40px;">
+      <div class="card" style="padding:24px;">
+        <div style="font-size:28px;margin-bottom:12px;">🧩</div>
+        <h3 style="font-size:17px;font-weight:700;margin-bottom:8px;">多维度能力建模</h3>
+        <p style="font-size:14px;color:var(--text-muted);line-height:1.7;">技能标签 × 经历年限 × 证书资质 × 经济情况 × 城市就业环境，综合打分，不靠猜</p>
+      </div>
+      <div class="card" style="padding:24px;">
+        <div style="font-size:28px;margin-bottom:12px;">📈</div>
+        <h3 style="font-size:17px;font-weight:700;margin-bottom:8px;">行业前景数据支撑</h3>
+        <p style="font-size:14px;color:var(--text-muted);line-height:1.7;">结合当前招聘需求数据、行业增速、薪资水平，告诉你哪条路值得走</p>
+      </div>
+      <div class="card" style="padding:24px;">
+        <div style="font-size:28px;margin-bottom:12px;">☯️</div>
+        <h3 style="font-size:17px;font-weight:700;margin-bottom:8px;">五行命理增强分析</h3>
+        <p style="font-size:14px;color:var(--text-muted);line-height:1.7;">基于出生年月推算五行偏重，与行业属性交叉验证，提供"顺势而为"的参考维度</p>
+      </div>
+      <div class="card" style="padding:24px;">
+        <div style="font-size:28px;margin-bottom:12px;">📄</div>
+        <h3 style="font-size:17px;font-weight:700;margin-bottom:8px;">专业简历定制服务</h3>
+        <p style="font-size:14px;color:var(--text-muted);line-height:1.7;">你填内容，我们帮你包装。真人写手+AI优化，ATS通过率比自己写的高3倍以上</p>
+      </div>
+      <div class="card" style="padding:24px;">
+        <div style="font-size:28px;margin-bottom:12px;">🎯</div>
+        <h3 style="font-size:17px;font-weight:700;margin-bottom:8px;">后续跟踪与陪伴</h3>
+        <p style="font-size:14px;color:var(--text-muted);line-height:1.7;">不是给完报告就结束，会员可以持续提问、更新方案，我们一直跟你走</p>
+      </div>
+      <div class="card" style="padding:24px;">
+        <div style="font-size:28px;margin-bottom:12px;">💡</div>
+        <h3 style="font-size:17px;font-weight:700;margin-bottom:8px;">创业可行性评估</h3>
+        <p style="font-size:14px;color:var(--text-muted);line-height:1.7;">从你的资源、性格、资金出发，筛选适合你的赛道，提前规避常见坑</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div style="background:linear-gradient(135deg,#1E40AF,#7C3AED);padding:64px 24px;text-align:center;color:#fff;">
+    <h2 style="font-size:clamp(24px,4vw,38px);font-weight:900;margin-bottom:12px;">别再等了</h2>
+    <p style="font-size:16px;opacity:0.85;margin-bottom:28px;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.7;">每耽误一个月，就是一个月的机会成本。<br>免费测评5分钟，换一份属于你的职业路线图。</p>
+    <button class="btn-primary" style="font-size:17px;padding:16px 40px;" onclick="showPage('assessment')">🚀 立即开始免费测评</button>
+    <div style="font-size:13px;opacity:0.6;margin-top:12px;">已有 <strong>12,847</strong> 人完成测评 · 免费 · 无需注册</div>
+  </div>
+
+</div><!-- /home -->
+
+<!-- ===== SERVICES PAGE ===== -->
+<div id="page-services" class="page">
+  <div class="pricing-wrapper">
+    <div style="text-align:center;padding:48px 0 24px;">
+      <div class="section-label">付费服务</div>
+      <h1 class="section-title" style="text-align:center;">专业服务，帮你少走弯路</h1>
+      <p style="font-size:15px;color:var(--text-muted);max-width:500px;margin:0 auto;">每一项服务都能单独购买，无需会员。会员可享受折扣叠加。</p>
+    </div>
+
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">📋</div>
+        <h3>职业方向深度报告</h3>
+        <div class="service-price">¥39 <span>/份</span></div>
+        <ul class="service-features">
+          <li>12个行业适配度评分</li>
+          <li>前3名行业详细解读</li>
+          <li>五行命理行业建议</li>
+          <li>近期可执行行动方案</li>
+          <li>PDF下载永久保存</li>
+        </ul>
+        <button class="service-btn service-btn-outline" onclick="showPage('assessment')">先免费测评</button>
+      </div>
+
+      <div class="service-card featured">
+        <div class="service-icon">📄</div>
+        <h3>专业简历定制</h3>
+        <div class="service-price">¥199 <span>/份</span></div>
+        <ul class="service-features">
+          <li>1对1深度沟通挖掘经历</li>
+          <li>真人写手撰写+AI优化双重打磨</li>
+          <li>ATS友好结构设计</li>
+          <li>针对目标岗位关键词优化</li>
+          <li>两次修改机会（3工作日交付）</li>
+          <li>附赠求职信模板</li>
+        </ul>
+        <button class="service-btn service-btn-primary" onclick="alert('简历定制服务即将上线，扫码联系顾问！')">立即下单</button>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">🎯</div>
+        <h3>创业可行性评估</h3>
+        <div class="service-price">¥299 <span>/次</span></div>
+        <ul class="service-features">
+          <li>赛道竞争格局分析</li>
+          <li>启动资金估算</li>
+          <li>你的资源匹配度评分</li>
+          <li>风险点清单与规避建议</li>
+          <li>同赛道成功案例参考</li>
+        </ul>
+        <button class="service-btn service-btn-outline" onclick="alert('创业评估服务咨询中，请联系顾问！')">咨询顾问</button>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">💬</div>
+        <h3>1对1职业咨询</h3>
+        <div class="service-price">¥99 <span>/30分钟</span></div>
+        <ul class="service-features">
+          <li>资深职业规划师在线陪谈</li>
+          <li>工作日24小时预约</li>
+          <li>会后整理建议摘要</li>
+          <li>7天内一次免费追问</li>
+        </ul>
+        <button class="service-btn service-btn-outline" onclick="alert('咨询预约功能即将上线！')">预约咨询</button>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">🏆</div>
+        <h3>面试突击辅导</h3>
+        <div class="service-price">¥149 <span>/次</span></div>
+        <ul class="service-features">
+          <li>目标岗位高频面试题预测</li>
+          <li>STAR法则答题框架指导</li>
+          <li>弱点包装与反转技巧</li>
+          <li>模拟面试1场（录音回放）</li>
+        </ul>
+        <button class="service-btn service-btn-outline" onclick="alert('面试辅导预约即将上线！')">预约辅导</button>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">📊</div>
+        <h3>薪资谈判策略</h3>
+        <div class="service-price">¥79 <span>/次</span></div>
+        <ul class="service-features">
+          <li>目标岗位市场薪资调研</li>
+          <li>个人谈判筹码梳理</li>
+          <li>标准谈判话术模板</li>
+          <li>offer对比选择建议</li>
+        </ul>
+        <button class="service-btn service-btn-outline" onclick="alert('薪资策略服务即将上线！')">了解详情</button>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin:40px 0 20px;">
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">想要持续服务？加入会员享全年折扣与定期跟踪</p>
+      <button class="btn-primary" onclick="showPage('pricing')">查看会员方案 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PRICING / MEMBERSHIP PAGE ===== -->
+<div id="page-pricing" class="page">
+  <div class="pricing-wrapper">
+    <div style="text-align:center;padding:48px 0 24px;">
+      <div class="section-label">会员体系</div>
+      <h1 class="section-title" style="text-align:center;">选择适合你的计划</h1>
+      <p style="font-size:15px;color:var(--text-muted);max-width:500px;margin:0 auto;">前期免费体验，找到感觉再升级。每个级别都包含持续的跟踪陪伴服务。</p>
+    </div>
+
+    <div class="member-grid">
+
+      <!-- 免费 -->
+      <div class="member-card free">
+        <div class="member-tag" style="color:var(--text-muted);">FREE</div>
+        <div class="member-name">免费探索</div>
+        <div class="member-price" style="color:var(--text);">¥0</div>
+        <div class="member-cycle">永久免费</div>
+        <ul class="member-features">
+          <li><span class="icon">✅</span>基础职业测评（每月1次）</li>
+          <li><span class="icon">✅</span>行业匹配简报（3个行业）</li>
+          <li><span class="icon">✅</span>五行命理速览</li>
+          <li><span class="icon">❌</span><span style="color:var(--text-hint)">深度行业报告</span></li>
+          <li><span class="icon">❌</span><span style="color:var(--text-hint)">1对1咨询</span></li>
+          <li><span class="icon">❌</span><span style="color:var(--text-hint)">后续跟踪</span></li>
+        </ul>
+        <button class="member-btn" style="background:var(--bg);border:1.5px solid var(--border);color:var(--text);" onclick="showPage('assessment')">免费开始</button>
+      </div>
+
+      <!-- 初级 -->
+      <div class="member-card basic">
+        <div class="member-tag" style="color:#1D4ED8;">BASIC</div>
+        <div class="member-name" style="color:#1E3A8A;">初级会员</div>
+        <div class="member-price" style="color:#1D4ED8;">¥198 <sub>/年</sub></div>
+        <div class="member-cycle">每年 ≈ ¥16.5/月</div>
+        <ul class="member-features">
+          <li><span class="icon">✅</span>完整职业测评（<strong>每年6次</strong>）</li>
+          <li><span class="icon">✅</span>深度行业报告 PDF</li>
+          <li><span class="icon">✅</span>AI简历诊断（每年3次）</li>
+          <li><span class="icon">✅</span>文字咨询无限次（工作日）</li>
+          <li><span class="icon">✅</span>半年节点跟踪回访（2次）</li>
+          <li><span class="icon">❌</span><span style="color:var(--text-muted)">1对1视频咨询</span></li>
+        </ul>
+        <button class="member-btn" style="background:#2563EB;color:#fff;" onclick="alert('初级会员开通中，扫码联系！')">开通初级会员</button>
+      </div>
+
+      <!-- 中级 -->
+      <div class="member-card mid">
+        <div style="position:absolute;top:16px;right:16px;background:#7C3AED;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;">最划算</div>
+        <div class="member-tag" style="color:#5B21B6;">PLUS</div>
+        <div class="member-name" style="color:#3B0764;">中级会员</div>
+        <div class="member-price" style="color:#7C3AED;">¥498 <sub>/年</sub></div>
+        <div class="member-cycle">每年 ≈ ¥41.5/月</div>
+        <ul class="member-features">
+          <li><span class="icon">✅</span>完整职业测评（<strong>每月2次</strong>）</li>
+          <li><span class="icon">✅</span>深度行业报告 + 创业评估</li>
+          <li><span class="icon">✅</span>专业简历定制（1份/年）</li>
+          <li><span class="icon">✅</span>1对1在线咨询（每月1次）</li>
+          <li><span class="icon">✅</span>季度跟踪回访（4次）</li>
+          <li><span class="icon">✅</span>面试问题定制包</li>
+          <li><span class="icon">❌</span><span style="color:var(--text-muted)">全年无限咨询</span></li>
+        </ul>
+        <button class="member-btn" style="background:#7C3AED;color:#fff;" onclick="alert('中级会员开通中，扫码联系！')">开通中级会员</button>
+      </div>
+
+      <!-- 高级 -->
+      <div class="member-card premium">
+        <div class="member-tag" style="color:#92400E;">PREMIUM</div>
+        <div class="member-name" style="color:#78350F;">高级会员</div>
+        <div class="member-price" style="color:#D97706;">¥1280 <sub>/年</sub></div>
+        <div class="member-cycle">专属顾问 · 全年陪伴</div>
+        <ul class="member-features">
+          <li><span class="icon">✅</span>测评 <strong>随时做、随时改</strong></li>
+          <li><span class="icon">✅</span>专属职业顾问1名（全年绑定）</li>
+          <li><span class="icon">✅</span>专业简历定制（无限次修改）</li>
+          <li><span class="icon">✅</span>1对1视频咨询（每月3次）</li>
+          <li><span class="icon">✅</span>月度跟踪回访（12次）</li>
+          <li><span class="icon">✅</span>创业项目全程评估</li>
+          <li><span class="icon">✅</span>就业offer谈判全程陪同</li>
+          <li><span class="icon">✅</span>所有服务9折优惠</li>
+        </ul>
+        <button class="member-btn" style="background:#D97706;color:#fff;" onclick="alert('高级会员咨询，扫码联系顾问！')">咨询高级会员</button>
+      </div>
+    </div>
+
+    <!-- 对比表 -->
+    <div style="margin:40px 0;overflow-x:auto;">
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:20px;text-align:center;">各级别功能对比</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:600px;">
+        <thead>
+          <tr style="background:var(--bg);">
+            <th style="padding:12px 16px;text-align:left;border-bottom:2px solid var(--border);">功能</th>
+            <th style="padding:12px 8px;text-align:center;border-bottom:2px solid var(--border);">免费</th>
+            <th style="padding:12px 8px;text-align:center;border-bottom:2px solid var(--border);color:#1D4ED8;">初级</th>
+            <th style="padding:12px 8px;text-align:center;border-bottom:2px solid var(--border);color:#7C3AED;">中级</th>
+            <th style="padding:12px 8px;text-align:center;border-bottom:2px solid var(--border);color:#D97706;">高级</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:10px 16px;border-bottom:1px solid var(--border);">职业测评次数/年</td><td style="text-align:center;border-bottom:1px solid var(--border);">1次</td><td style="text-align:center;border-bottom:1px solid var(--border);color:#1D4ED8;">6次</td><td style="text-align:center;border-bottom:1px solid var(--border);color:#7C3AED;">24次</td><td style="text-align:center;border-bottom:1px solid var(--border);color:#D97706;">∞</td></tr>
+          <tr style="background:#fafafa;"><td style="padding:10px 16px;border-bottom:1px solid var(--border);">行业深度报告</td><td style="text-align:center;border-bottom:1px solid var(--border);">简版</td><td style="text-align:center;border-bottom:1px solid var(--border);color:#1D4ED8;">✅</td><td style="text-align:center;border-bottom:1px solid var(--border);color:#7C3AED;">✅</td><td style="text-align:center;border-bottom:1px solid var(--border);color:#D97706;">✅</td></tr>
+          <tr><td style="padding:10px 16px;border-bottom:1px solid var(--border);">专业简历定制</td><td style="text-align:center;border-bottom:1px solid var(--border);">❌</td><td style="text-align:center;border-bottom:1px solid var(--border);color:#1D4ED8;">诊断3次</td><td style="text-align:center;border-bottom:1px solid var(--border);color:#7C3AED;">定制1份</td><td style="text-align:center;border-bottom:1px solid var(--border);color:#D97706;">无限修改</td></tr>
+          <tr style="background:#fafafa;"><td style="padding:10px 16px;border-bottom:1px solid var(--border);">1对1咨询</td><td style="text-align:center;border-bottom:1px solid var(--border);">❌</td><td style="text-align:center;border-bottom:1px solid var(--border);color:#1D4ED8;">文字无限</td><td style="text-align:center;border-bottom:1px solid var(--border);color:#7C3AED;">每月1次</td><td style="text-align:center;border-bottom:1px solid var(--border);color:#D97706;">每月3次</td></tr>
+          <tr><td style="padding:10px 16px;border-bottom:1px solid var(--border);">后续跟踪回访</td><td style="text-align:center;border-bottom:1px solid var(--border);">❌</td><td style="text-align:center;border-bottom:1px solid var(--border);color:#1D4ED8;">2次/年</td><td style="text-align:center;border-bottom:1px solid var(--border);color:#7C3AED;">4次/年</td><td style="text-align:center;border-bottom:1px solid var(--border);color:#D97706;">12次/年</td></tr>
+          <tr style="background:#fafafa;"><td style="padding:10px 16px;">创业评估</td><td style="text-align:center;">❌</td><td style="text-align:center;color:#1D4ED8;">❌</td><td style="text-align:center;color:#7C3AED;">✅</td><td style="text-align:center;color:#D97706;">全程</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="text-align:center;margin:32px 0;">
+      <button class="btn-primary" style="margin-right:12px;" onclick="showPage('assessment')">先免费测评</button>
+      <button class="btn-secondary" onclick="showPage('services')">查看单次服务</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ASSESSMENT PAGE ===== -->
+<div id="page-assessment" class="page">
+  <div class="assessment-wrapper">
+    <div class="assessment-header">
+      <h1 style="font-size:24px;font-weight:900;">🎯 职业方向免费测评</h1>
+      <p style="font-size:14px;color:var(--text-muted);margin-top:6px;">5分钟填完，立刻获取你的专属职业路线图</p>
+    </div>
+
+    <!-- AI 引擎设置 -->
+    <div style="max-width: 560px; margin: 0 auto 0;">
+      <button class="ai-settings-toggle" onclick="toggleAISettings()">
+        ⚙️ AI引擎设置
+        <span class="ai-badge" id="ai-status-badge" style="background:#9CA3AF;">未启用</span>
+      </button>
+      <div class="ai-settings-panel" id="ai-settings">
+        <div style="font-size:14px;font-weight:700;margin-bottom:4px;">选择AI模型</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;">接入AI后，你的职业报告将从规则打分升级为真正的深度分析报告，说服力翻倍。</div>
+        <div class="ai-model-selector" id="ai-model-selector">
+          <div class="ai-model-btn active" onclick="selectAIModel('none', this)">
+            <span class="model-name">⚡ 规则引擎</span>
+            <span class="model-tag">无需配置</span>
+          </div>
+          <div class="ai-model-btn" onclick="selectAIModel('deepseek', this)">
+            <span class="model-name">🧠 DeepSeek</span>
+            <span class="model-tag">推荐 · 高性价比</span>
+          </div>
+          <div class="ai-model-btn" onclick="selectAIModel('qwen', this)">
+            <span class="model-name">🌐 通义千问</span>
+            <span class="model-tag">阿里云</span>
+          </div>
+          <div class="ai-model-btn" onclick="selectAIModel('ernie', this)">
+            <span class="model-name">📘 文心一言</span>
+            <span class="model-tag">百度</span>
+          </div>
+        </div>
+        <div id="api-key-section" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">API Key <span>（仅保存在你的浏览器本地）</span></label>
+            <input type="password" class="form-input" id="f-api-key" placeholder="输入你的 API Key…" onchange="onAPIKeyChange()" />
+          </div>
+          <div style="font-size:12px;color:var(--text-hint);line-height:1.6;background:var(--primary-light);padding:12px;border-radius:8px;">
+            💡 <strong>免费获取：</strong><br>
+            DeepSeek → <a href="https://platform.deepseek.com/api_keys" target="_blank" style="color:var(--primary);">platform.deepseek.com</a>（新用户送500万tokens）<br>
+            通义千问 → <a href="https://dashscope.console.aliyun.com" target="_blank" style="color:var(--primary);">阿里云百炼</a>（免费额度）<br>
+            文心一言 → <a href="https://console.bce.baidu.com" target="_blank" style="color:var(--primary);">百度智能云</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step indicator -->
+    <div>
+      <div class="step-indicator" id="stepIndicator">
+        <div class="step-item">
+          <div>
+            <div class="step-dot active" id="step-dot-1">1</div>
+            <div class="step-label">基本情况</div>
+          </div>
+        </div>
+        <div class="step-line" id="step-line-1"></div>
+        <div class="step-item">
+          <div>
+            <div class="step-dot" id="step-dot-2">2</div>
+            <div class="step-label">技能经历</div>
+          </div>
+        </div>
+        <div class="step-line" id="step-line-2"></div>
+        <div class="step-item">
+          <div>
+            <div class="step-dot" id="step-dot-3">3</div>
+            <div class="step-label">资源条件</div>
+          </div>
+        </div>
+        <div class="step-line" id="step-line-3"></div>
+        <div class="step-item">
+          <div>
+            <div class="step-dot" id="step-dot-4">4</div>
+            <div class="step-label">命理参考</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 1: 基本情况 -->
+    <div class="form-step active card" style="padding:28px;" id="step-1">
+      <h2>📋 基本情况</h2>
+      <p class="step-desc">先了解你的基本情况，越真实越准确。</p>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">你叫什么 <span>（昵称即可）</span></label>
+          <input type="text" class="form-input" id="f-name" placeholder="如：小明" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">年龄</label>
+          <input type="number" class="form-input" id="f-age" placeholder="如：28" min="16" max="65" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">当前状态</label>
+        <div class="radio-group">
+          <div class="radio-opt selected" onclick="selectRadio(this,'status','graduate')">
+            <div class="radio-dot"></div>
+            <div class="radio-text"><strong>🎓 应届生 / 毕业不久</strong><small>刚毕业或毕业1-2年，在找第一份方向</small></div>
+          </div>
+          <div class="radio-opt" onclick="selectRadio(this,'status','jobless')">
+            <div class="radio-dot"></div>
+            <div class="radio-text"><strong>💼 在职中 / 想换方向</strong><small>有工作但不满意，考虑转行或提升</small></div>
+          </div>
+          <div class="radio-opt" onclick="selectRadio(this,'status','unemployed')">
+            <div class="radio-dot"></div>
+            <div class="radio-text"><strong>😮‍💨 失业中 / 被迫转型</strong><small>失业或被裁，需要尽快找到新出路</small></div>
+          </div>
+          <div class="radio-opt" onclick="selectRadio(this,'status','startup')">
+            <div class="radio-dot"></div>
+            <div class="radio-text"><strong>🚀 想创业 / 自己干</strong><small>有想法、有资源，但不确定赛道</small></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">所在城市</label>
+          <select class="form-input" id="f-city">
+            <option value="">-- 选择城市 --</option>
+            <option>北京</option><option>上海</option><option>广州</option><option>深圳</option>
+            <option>杭州</option><option>成都</option><option>武汉</option><option>西安</option>
+            <option>南京</option><option>重庆</option><option>哈尔滨</option><option>沈阳</option>
+            <option>其他一线城市</option><option>二三线城市</option><option>县城/农村</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">最高学历</label>
+          <select class="form-input" id="f-edu">
+            <option value="">-- 选择学历 --</option>
+            <option>高中/中专</option><option>大专</option><option>本科</option>
+            <option>硕士研究生</option><option>博士及以上</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <div class="step-hint">第1步 / 共4步</div>
+        <button class="step-next" onclick="nextStep(1)">下一步 →</button>
+      </div>
+    </div>
+
+    <!-- Step 2: 技能经历 -->
+    <div class="form-step card" style="padding:28px;" id="step-2">
+      <h2>🧩 技能 & 经历</h2>
+      <p class="step-desc">选择你有过的经历和掌握的能力（可多选，尽量选全）。</p>
+
+      <div class="form-group">
+        <label class="form-label">技术与专业技能</label>
+        <div class="tag-group" id="tags-tech">
+          <span class="skill-tag" onclick="toggleTag(this)">编程开发</span>
+          <span class="skill-tag" onclick="toggleTag(this)">数据分析</span>
+          <span class="skill-tag" onclick="toggleTag(this)">设计（UI/平面）</span>
+          <span class="skill-tag" onclick="toggleTag(this)">视频剪辑</span>
+          <span class="skill-tag" onclick="toggleTag(this)">自媒体运营</span>
+          <span class="skill-tag" onclick="toggleTag(this)">财会/审计</span>
+          <span class="skill-tag" onclick="toggleTag(this)">法律/合规</span>
+          <span class="skill-tag" onclick="toggleTag(this)">医疗/护理</span>
+          <span class="skill-tag" onclick="toggleTag(this)">教育/培训</span>
+          <span class="skill-tag" onclick="toggleTag(this)">工程/建筑</span>
+          <span class="skill-tag" onclick="toggleTag(this)">销售/BD</span>
+          <span class="skill-tag" onclick="toggleTag(this)">市场营销</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">通用软技能</label>
+        <div class="tag-group" id="tags-soft">
+          <span class="skill-tag" onclick="toggleTag(this)">沟通表达强</span>
+          <span class="skill-tag" onclick="toggleTag(this)">善于写作</span>
+          <span class="skill-tag" onclick="toggleTag(this)">管理协调</span>
+          <span class="skill-tag" onclick="toggleTag(this)">独立研究</span>
+          <span class="skill-tag" onclick="toggleTag(this)">擅长教学</span>
+          <span class="skill-tag" onclick="toggleTag(this)">耐心细致</span>
+          <span class="skill-tag" onclick="toggleTag(this)">创意思维</span>
+          <span class="skill-tag" onclick="toggleTag(this)">执行力强</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">工作年限</label>
+        <div class="slider-wrap">
+          <div class="slider-row">
+            <input type="range" class="range-slider" min="0" max="20" value="3" id="f-years" oninput="document.getElementById('years-val').textContent=this.value+'年'">
+            <div class="slider-val" id="years-val">3年</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">持有证书 <span>（可多选）</span></label>
+        <div class="tag-group" id="tags-cert">
+          <span class="skill-tag" onclick="toggleTag(this)">教师资格证</span>
+          <span class="skill-tag" onclick="toggleTag(this)">注册会计师CPA</span>
+          <span class="skill-tag" onclick="toggleTag(this)">律师资格证</span>
+          <span class="skill-tag" onclick="toggleTag(this)">医师执照</span>
+          <span class="skill-tag" onclick="toggleTag(this)">PMP项目管理</span>
+          <span class="skill-tag" onclick="toggleTag(this)">驾驶证（货运）</span>
+          <span class="skill-tag" onclick="toggleTag(this)">建造师证</span>
+          <span class="skill-tag" onclick="toggleTag(this)">其他职业证书</span>
+          <span class="skill-tag" onclick="toggleTag(this)">暂无证书</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="step-prev" onclick="prevStep(2)">← 上一步</button>
+        <button class="step-next" onclick="nextStep(2)">下一步 →</button>
+      </div>
+    </div>
+
+    <!-- Step 3: 资源条件 -->
+    <div class="form-step card" style="padding:28px;" id="step-3">
+      <h2>💰 资源 & 条件</h2>
+      <p class="step-desc">了解你的资源底牌，帮我们给你更务实的建议。</p>
+
+      <div class="form-group">
+        <label class="form-label">可用启动/求职资金</label>
+        <div class="radio-group">
+          <div class="radio-opt selected" onclick="selectRadio(this,'capital','0')">
+            <div class="radio-dot"></div>
+            <div class="radio-text"><strong>基本没有多余资金</strong><small>需要马上开始挣钱</small></div>
+          </div>
+          <div class="radio-opt" onclick="selectRadio(this,'capital','3')">
+            <div class="radio-dot"></div>
+            <div class="radio-text"><strong>1-5万</strong><small>可以维持3-6个月探索期</small></div>
+          </div>
+          <div class="radio-opt" onclick="selectRadio(this,'capital','10')">
+            <div class="radio-dot"></div>
+            <div class="radio-text"><strong>5-20万</strong><small>可以创业或系统学习转型</small></div>
+          </div>
+          <div class="radio-opt" onclick="selectRadio(this,'capital','50')">
+            <div class="radio-dot"></div>
+            <div class="radio-text"><strong>20万以上</strong><small>有一定本金，希望做更大项目</small></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">对风险的接受程度</label>
+        <div class="radio-group">
+          <div class="radio-opt selected" onclick="selectRadio(this,'risk','low')">
+            <div class="radio-dot"></div>
+            <div class="radio-text"><strong>🛡️ 求稳</strong><small>希望收入稳定、风险可控</small></div>
+          </div>
+          <div class="radio-opt" onclick="selectRadio(this,'risk','mid')">
+            <div class="radio-dot"></div>
+            <div class="radio-text"><strong>⚖️ 中等冒险</strong><small>可以接受短期波动换长期回报</small></div>
+          </div>
+          <div class="radio-opt" onclick="selectRadio(this,'risk','high')">
+            <div class="radio-dot"></div>
+            <div class="radio-text"><strong>🔥 高风险高回报</strong><small>敢赌，能接受失败</small></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">期望月收入（税前）</label>
+        <div class="slider-wrap">
+          <div class="slider-row">
+            <input type="range" class="range-slider" min="3" max="50" value="10" id="f-salary" oninput="document.getElementById('salary-val').textContent='¥'+this.value+'k'">
+            <div class="slider-val" id="salary-val">¥10k</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">最关心什么 <span>（可多选）</span></label>
+        <div class="tag-group" id="tags-priority">
+          <span class="skill-tag" onclick="toggleTag(this)">薪资高</span>
+          <span class="skill-tag" onclick="toggleTag(this)">稳定安全</span>
+          <span class="skill-tag" onclick="toggleTag(this)">时间自由</span>
+          <span class="skill-tag" onclick="toggleTag(this)">成长空间</span>
+          <span class="skill-tag" onclick="toggleTag(this)">社会认可</span>
+          <span class="skill-tag" onclick="toggleTag(this)">兴趣爱好</span>
+          <span class="skill-tag" onclick="toggleTag(this)">家庭兼顾</span>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="step-prev" onclick="prevStep(3)">← 上一步</button>
+        <button class="step-next" onclick="nextStep(3)">下一步 →</button>
+      </div>
+    </div>
+
+    <!-- Step 4: 命理参考 -->
+    <div class="form-step card" style="padding:28px;" id="step-4">
+      <h2>☯️ 命理参考 <span style="font-size:14px;color:var(--text-muted);font-weight:400;">（可选填）</span></h2>
+      <p class="step-desc">填写出生年份，我们根据五行理论给你补充一个"顺势而为"的维度。不信也没关系，但信了说不定有惊喜。</p>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">出生年份</label>
+          <input type="number" class="form-input" id="f-birth-year" placeholder="如：1995" min="1960" max="2006" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">出生月份</label>
+          <select class="form-input" id="f-birth-month">
+            <option value="">-- 月份 --</option>
+            <option value="1">1月</option><option value="2">2月</option><option value="3">3月</option>
+            <option value="4">4月</option><option value="5">5月</option><option value="6">6月</option>
+            <option value="7">7月</option><option value="8">8月</option><option value="9">9月</option>
+            <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="background:var(--primary-light);border-radius:10px;padding:16px;margin-top:8px;">
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.7;">
+          📖 <strong>五行与行业对应关系：</strong><br>
+          木 → 教育、文化、健康医疗<br>
+          火 → 科技、传媒、娱乐<br>
+          土 → 房地产、建筑、农业<br>
+          金 → 金融、律师、机械制造<br>
+          水 → 物流、贸易、餐饮服务
+        </p>
+      </div>
+
+      <div class="step-nav">
+        <button class="step-prev" onclick="prevStep(4)">← 上一步</button>
+        <button class="step-next" onclick="generateResult()" id="gen-btn" style="background:var(--green);font-size:15px;padding:12px 28px;">🚀 生成我的报告</button>
+      </div>
+    </div>
+
+    <!-- AI 加载状态 -->
+    <div class="ai-loading" id="ai-loading">
+      <div class="ai-loading-dots"><span></span><span></span><span></span></div>
+      <div class="ai-loading-text" id="ai-loading-text">AI正在分析你的职业路径…</div>
+    </div>
+
+    <!-- AI 错误提示 -->
+    <div class="ai-error" id="ai-error">
+      <div id="ai-error-msg"></div>
+      <button onclick="retryAIGeneration()">🔄 重试AI分析</button>
+      <button style="background:#6B7280;margin-left:8px;" onclick="skipAIAndShowResult()">跳过，看基础报告</button>
+    </div>
+
+  </div><!-- /assessment-wrapper -->
+</div><!-- /assessment page -->
+
+<!-- ===== RESULT PAGE ===== -->
+<div id="page-result" class="page">
+  <div class="result-wrapper">
+
+    <!-- 报告头部 -->
+    <div class="result-hero" id="result-hero">
+      <div style="font-size:12px;opacity:0.7;margin-bottom:8px;">📊 你的专属职业方向报告</div>
+      <h2 id="result-name">Hi，这是你的职业路线图</h2>
+      <p id="result-tagline">基于你的经历、资源、五行，我们为你找到了最适合的方向</p>
+      <div style="display:flex;justify-content:center;gap:24px;align-items:center;flex-wrap:wrap;margin-top:16px;">
+        <div class="result-score-ring">
+          <div class="result-score-num" id="result-score">--</div>
+          <div class="result-score-label">综合匹配分</div>
+        </div>
+        <div id="result-tags" class="result-tags"></div>
+      </div>
+    </div>
+
+    <!-- 行业匹配 -->
+    <div class="result-section card" style="padding:24px;">
+      <div class="result-section-title">行业适配度排名</div>
+      <div id="industry-list"></div>
+    </div>
+
+    <!-- 五行分析 -->
+    <div class="result-section card" style="padding:24px;">
+      <div class="result-section-title">五行命理辅助分析</div>
+      <div class="wuxing-bars" id="wuxing-bars">
+        <div class="wuxing-item">
+          <div class="wuxing-bar-wrap"><div class="wuxing-bar" id="wx-mu" style="height:40px;background:#4ADE80;"></div></div>
+          <div class="wuxing-label" style="color:#16A34A;">木</div>
+          <div class="wuxing-pct" id="wx-mu-pct">—</div>
+        </div>
+        <div class="wuxing-item">
+          <div class="wuxing-bar-wrap"><div class="wuxing-bar" id="wx-huo" style="height:40px;background:#F87171;"></div></div>
+          <div class="wuxing-label" style="color:#DC2626;">火</div>
+          <div class="wuxing-pct" id="wx-huo-pct">—</div>
+        </div>
+        <div class="wuxing-item">
+          <div class="wuxing-bar-wrap"><div class="wuxing-bar" id="wx-tu" style="height:40px;background:#FBBF24;"></div></div>
+          <div class="wuxing-label" style="color:#D97706;">土</div>
+          <div class="wuxing-pct" id="wx-tu-pct">—</div>
+        </div>
+        <div class="wuxing-item">
+          <div class="wuxing-bar-wrap"><div class="wuxing-bar" id="wx-jin" style="height:40px;background:#94A3B8;"></div></div>
+          <div class="wuxing-label" style="color:#64748B;">金</div>
+          <div class="wuxing-pct" id="wx-jin-pct">—</div>
+        </div>
+        <div class="wuxing-item">
+          <div class="wuxing-bar-wrap"><div class="wuxing-bar" id="wx-shui" style="height:40px;background:#60A5FA;"></div></div>
+          <div class="wuxing-label" style="color:#2563EB;">水</div>
+          <div class="wuxing-pct" id="wx-shui-pct">—</div>
+        </div>
+      </div>
+      <p id="wuxing-advice" style="font-size:14px;color:var(--text-muted);margin-top:16px;line-height:1.7;background:var(--primary-light);padding:12px;border-radius:8px;"></p>
+    </div>
+
+    <!-- 行动建议 -->
+    <div class="result-section">
+      <div class="result-section-title" style="margin-bottom:16px;">近期可执行行动建议</div>
+      <div class="advice-grid" id="advice-grid"></div>
+    </div>
+
+    <!-- AI深度报告 -->
+    <div class="ai-report" id="ai-report" style="margin-top:24px;display:none;">
+      <div class="ai-report-label">🤖 AI深度分析</div>
+
+      <!-- 综合评分 -->
+      <div class="ai-section" id="ai-scores">
+        <div class="ai-section-title">📊 能力雷达</div>
+        <div class="ai-score-grid" id="ai-score-grid"></div>
+      </div>
+
+      <!-- 行业推荐 -->
+      <div class="ai-section" id="ai-industries">
+        <div class="ai-section-title">🎯 AI行业推荐</div>
+        <div class="ai-section-text" id="ai-industry-text"></div>
+      </div>
+
+      <!-- 个人优劣势 -->
+      <div class="ai-section">
+        <div class="ai-section-title">💪 你的独特优势</div>
+        <div class="ai-section-text" id="ai-strength"></div>
+      </div>
+
+      <div class="ai-section">
+        <div class="ai-section-title">⚠️ 需要注意的点</div>
+        <ul class="ai-risks" id="ai-risks"></ul>
+      </div>
+
+      <!-- 行动路线 -->
+      <div class="ai-section">
+        <div class="ai-section-title">🗺️ 行动路线图</div>
+        <ul class="ai-timeline" id="ai-timeline"></ul>
+      </div>
+
+      <!-- 五行分析 -->
+      <div class="ai-section">
+        <div class="ai-section-title">☯️ 五行命理深度解读</div>
+        <div class="ai-section-text" id="ai-wuxing"></div>
+      </div>
+
+      <!-- 一句话 -->
+      <div class="ai-section" style="text-align:center;padding:20px;background:#fff;border-radius:12px;border:1px solid #DDD6FE;">
+        <div style="font-size:28px;margin-bottom:8px;">💡</div>
+        <div style="font-size:16px;font-weight:700;color:#3B0764;" id="ai-verdict"></div>
+      </div>
+    </div>
+
+    <!-- 升级引导 -->
+    <div class="upsell-card">
+      <div style="font-size:36px;">📄</div>
+      <div class="upsell-card-text" style="flex:1;">
+        <h3>专业简历能让你的面试率提升3倍</h3>
+        <p>你的职业方向找到了。现在最短木板是简历——让我们帮你写一份真正能打的简历。</p>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="chip" style="background:#FDE68A;color:#78350F;">✅ 真人写手</span>
+          <span class="chip" style="background:#D1FAE5;color:#065F46;">✅ AI关键词优化</span>
+          <span class="chip" style="background:#DBEAFE;color:#1E40AF;">✅ 3工作日交付</span>
+        </div>
+      </div>
+      <div class="upsell-card-cta">
+        <div style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:6px;">首单特惠</div>
+        <div style="font-size:28px;font-weight:800;color:var(--amber);text-align:center;">¥149</div>
+        <div style="font-size:12px;text-decoration:line-through;color:var(--text-hint);text-align:center;margin-bottom:8px;">¥199</div>
+        <button class="upsell-btn" onclick="showPage('services')">立即定制简历</button>
+      </div>
+    </div>
+
+    <!-- 会员提示 -->
+    <div class="card" style="padding:24px;margin-top:20px;text-align:center;">
+      <div style="font-size:24px;margin-bottom:8px;">🔄</div>
+      <h3 style="font-size:17px;font-weight:700;margin-bottom:8px;">想让我们一直陪着你走</h3>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">职业规划不是一次性的。加入会员，每季度更新方向、持续跟踪你的进度。</p>
+      <button class="btn-primary" onclick="showPage('pricing')">查看会员方案</button>
+      <button class="btn-secondary" style="margin-left:8px;font-size:14px;padding:10px 20px;" onclick="showPage('assessment')">重新测评</button>
+    </div>
+
+  </div>
+</div><!-- /result -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">🔧 干个活儿</div>
+  <div class="footer-tagline">职业决策平台 · 找方向、做简历、跑起来</div>
+  <div class="footer-links">
+    <a href="#" onclick="showPage('home')">首页</a>
+    <a href="#" onclick="showPage('services')">服务项目</a>
+    <a href="#" onclick="showPage('pricing')">会员计划</a>
+    <a href="#" onclick="showPage('assessment')">免费测评</a>
+    <a href="#">关于我们</a>
+    <a href="#">隐私政策</a>
+  </div>
+  <div class="footer-bottom">
+    © 2026 干个活儿 · 帮你少走10年弯路 · 数据来源：教育部/国家统计局/行业研究机构
+  </div>
+</footer>
+
+<script>
+// ===== PAGE ROUTING =====
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== AI ENGINE STATE =====
+let aiConfig = {
+  model: 'none',
+  apiKey: '',
+  enabled: false,
+  lastPromptData: null,
+  retrying: false
+};
+
+const MODEL_CONFIG = {
+  deepseek: {
+    name: 'DeepSeek',
+    endpoint: 'https://api.deepseek.com/chat/completions',
+    model: 'deepseek-chat',
+    provider: 'deepseek'
+  },
+  qwen: {
+    name: '通义千问',
+    endpoint: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+    model: 'qwen-turbo',
+    provider: 'aliyun'
+  },
+  ernie: {
+    name: '文心一言',
+    endpoint: 'https://qianfan.baidubce.com/v2/chat/completions',
+    model: 'ernie-speed-128k',
+    provider: 'baidu'
+  }
+};
+
+const LOADING_MESSAGES = [
+  'AI正在分析你的职业路径…',
+  '核对你与各行业的匹配度…',
+  '推算五行命理影响…',
+  '生成个性化行动方案…',
+  '整理深度职业报告…'
+];
+
+function toggleAISettings() {
+  document.getElementById('ai-settings').classList.toggle('open');
+}
+
+function selectAIModel(model, el) {
+  aiConfig.model = model;
+  aiConfig.retrying = false;
+  document.querySelectorAll('.ai-model-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+
+  const badge = document.getElementById('ai-status-badge');
+  const keySection = document.getElementById('api-key-section');
+
+  if (model === 'none') {
+    aiConfig.enabled = false;
+    badge.textContent = '未启用';
+    badge.style.background = '#9CA3AF';
+    keySection.style.display = 'none';
+  } else {
+    keySection.style.display = 'block';
+    const savedKey = localStorage.getItem('ganyihuo_apikey_' + model);
+    if (savedKey) {
+      document.getElementById('f-api-key').value = savedKey;
+      aiConfig.apiKey = savedKey;
+      aiConfig.enabled = true;
+      const cfg = MODEL_CONFIG[model];
+      badge.textContent = cfg.name + ' ✓';
+      badge.style.background = 'linear-gradient(135deg, #059669, #34D399)';
+    } else {
+      aiConfig.apiKey = '';
+      aiConfig.enabled = false;
+      badge.textContent = '需配置Key';
+      badge.style.background = '#D97706';
+    }
+  }
+}
+
+function onAPIKeyChange() {
+  const key = document.getElementById('f-api-key').value.trim();
+  aiConfig.apiKey = key;
+  const badge = document.getElementById('ai-status-badge');
+
+  if (key && aiConfig.model !== 'none') {
+    localStorage.setItem('ganyihuo_apikey_' + aiConfig.model, key);
+    aiConfig.enabled = true;
+    const cfg = MODEL_CONFIG[aiConfig.model];
+    badge.textContent = cfg.name + ' ✓';
+    badge.style.background = 'linear-gradient(135deg, #059669, #34D399)';
+  } else {
+    aiConfig.enabled = false;
+    badge.textContent = '需配置Key';
+    badge.style.background = '#D97706';
+  }
+}
+
+// Init on page load
+(function() {
+  const savedModel = localStorage.getItem('ganyihuo_model');
+  if (savedModel && MODEL_CONFIG[savedModel]) {
+    aiConfig.model = savedModel;
+    const savedKey = localStorage.getItem('ganyihuo_apikey_' + savedModel);
+    if (savedKey) {
+      aiConfig.apiKey = savedKey;
+      aiConfig.enabled = true;
+    }
+    // Switch UI
+    document.querySelectorAll('.ai-model-btn').forEach(b => {
+      b.classList.remove('active');
+      if (b.textContent.includes(savedModel === 'deepseek' ? 'DeepSeek' : savedModel === 'qwen' ? '通义千问' : '文心一言')) {
+        b.classList.add('active');
+      }
+    });
+    if (savedModel !== 'none') {
+      document.getElementById('api-key-section').style.display = 'block';
+      document.getElementById('f-api-key').value = savedKey || '';
+    }
+    const badge = document.getElementById('ai-status-badge');
+    if (aiConfig.enabled) {
+      badge.textContent = MODEL_CONFIG[savedModel].name + ' ✓';
+      badge.style.background = 'linear-gradient(135deg, #059669, #34D399)';
+    }
+  }
+})();
+
+// ===== FORM STATE =====
+let formData = {
+  status: 'graduate', capital: '0', risk: 'low'
+};
+
+function selectRadio(el, key, val) {
+  el.closest('.radio-group').querySelectorAll('.radio-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  formData[key] = val;
+}
+
+function toggleTag(el) {
+  el.classList.toggle('selected');
+}
+
+// ===== STEP NAVIGATION =====
+let currentStep = 1;
+const totalSteps = 4;
+
+function nextStep(from) {
+  if (from < totalSteps) {
+    showStep(from + 1);
+  }
+}
+
+function prevStep(from) {
+  if (from > 1) {
+    showStep(from - 1);
+  }
+}
+
+function showStep(n) {
+  document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-' + n).classList.add('active');
+  currentStep = n;
+  updateStepIndicator(n);
+  document.querySelector('.assessment-wrapper').scrollIntoView({ behavior: 'smooth' });
+}
+
+function updateStepIndicator(n) {
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.getElementById('step-dot-' + i);
+    dot.classList.remove('active', 'done');
+    if (i < n) dot.classList.add('done');
+    if (i === n) dot.classList.add('active');
+    if (i < 4) {
+      const line = document.getElementById('step-line-' + i);
+      if (line) {
+        if (i < n) line.classList.add('done');
+        else line.classList.remove('done');
+      }
+    }
+  }
+}
+
+// ===== COLLECT FORM DATA =====
+function collectFormData() {
+  const name = document.getElementById('f-name').value || '你';
+  const age = parseInt(document.getElementById('f-age').value) || 25;
+  const city = document.getElementById('f-city').value || '未知城市';
+  const edu = document.getElementById('f-edu').value || '本科';
+  const years = parseInt(document.getElementById('f-years').value) || 0;
+  const salary = parseInt(document.getElementById('f-salary').value) || 10;
+  const birthYear = parseInt(document.getElementById('f-birth-year').value) || 1995;
+  const birthMonth = parseInt(document.getElementById('f-birth-month').value) || 6;
+
+  const selectedTech = [...document.querySelectorAll('#tags-tech .skill-tag.selected')].map(t => t.textContent);
+  const selectedSoft = [...document.querySelectorAll('#tags-soft .skill-tag.selected')].map(t => t.textContent);
+  const selectedCert = [...document.querySelectorAll('#tags-cert .skill-tag.selected')].map(t => t.textContent);
+  const priorities = [...document.querySelectorAll('#tags-priority .skill-tag.selected')].map(t => t.textContent);
+
+  return {
+    name, age, city, edu, years, salary, birthYear, birthMonth,
+    status: formData.status,
+    capital: parseFloat(formData.capital),
+    risk: formData.risk,
+    skills: { tech: selectedTech, soft: selectedSoft },
+    certs: selectedCert,
+    priorities
+  };
+}
+
+// ===== RESULT GENERATION =====
+async function generateResult() {
+  const data = collectFormData();
+  const genBtn = document.getElementById('gen-btn');
+  genBtn.textContent = '⏳ 分析中…';
+  genBtn.disabled = true;
+  genBtn.style.opacity = '0.7';
+
+  // Save model preference
+  localStorage.setItem('ganyihuo_model', aiConfig.model);
+
+  // 1. Always run rule engine
+  const industries = runRuleEngine(data);
+  renderBasicResult(data, industries);
+
+  // 2. If AI enabled, run AI analysis
+  if (aiConfig.enabled && aiConfig.model !== 'none' && aiConfig.apiKey) {
+    document.getElementById('ai-loading').classList.add('active');
+    document.getElementById('ai-error').classList.remove('active');
+    document.getElementById('ai-report').style.display = 'none';
+    document.getElementById('ai-loading-text').textContent = LOADING_MESSAGES[0];
+
+    // Cycle loading messages
+    let msgIdx = 0;
+    const msgInterval = setInterval(() => {
+      msgIdx = (msgIdx + 1) % LOADING_MESSAGES.length;
+      document.getElementById('ai-loading-text').textContent = LOADING_MESSAGES[msgIdx];
+    }, 2000);
+
+    aiConfig.lastPromptData = data;
+
+    try {
+      const aiResult = await callAI(data);
+      clearInterval(msgInterval);
+      document.getElementById('ai-loading').classList.remove('active');
+      renderAIResult(aiResult);
+    } catch (err) {
+      clearInterval(msgInterval);
+      document.getElementById('ai-loading').classList.remove('active');
+      document.getElementById('ai-error-msg').innerHTML = '<strong>AI分析出错：</strong>' + escapeHtml(err.message);
+      document.getElementById('ai-error').classList.add('active');
+    }
+  }
+
+  showPage('result');
+  genBtn.textContent = '🚀 生成我的报告';
+  genBtn.disabled = false;
+  genBtn.style.opacity = '1';
+
+  // Animate progress bars after slight delay
+  setTimeout(() => {
+    document.querySelectorAll('.progress-fill').forEach(bar => {
+      bar.style.width = bar.dataset.width;
+    });
+  }, 150);
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+async function retryAIGeneration() {
+  if (!aiConfig.lastPromptData) return;
+  aiConfig.retrying = true;
+  document.getElementById('ai-loading').classList.add('active');
+  document.getElementById('ai-error').classList.remove('active');
+  document.getElementById('ai-report').style.display = 'none';
+  document.getElementById('ai-loading-text').textContent = '重新请求AI分析…';
+
+  try {
+    const aiResult = await callAI(aiConfig.lastPromptData);
+    document.getElementById('ai-loading').classList.remove('active');
+    renderAIResult(aiResult);
+  } catch (err) {
+    document.getElementById('ai-loading').classList.remove('active');
+    document.getElementById('ai-error-msg').innerHTML = '<strong>仍失败：</strong>' + escapeHtml(err.message);
+    document.getElementById('ai-error').classList.add('active');
+  }
+}
+
+function skipAIAndShowResult() {
+  document.getElementById('ai-loading').classList.remove('active');
+  document.getElementById('ai-error').classList.remove('active');
+  document.getElementById('ai-report').style.display = 'none';
+}
+
+// ===== RULE ENGINE =====
+function runRuleEngine(data) {
+  const { age, city, edu, years, salary, status, capital, risk, skills, certs, priorities } = data;
+
+  const industries = [
+    { name: '🤖 互联网/科技', key: 'tech', base: 60, icon: '🤖', wuxing: '火', trend: '高速增长', desc: 'AI、云计算、软件开发持续扩张' },
+    { name: '📚 教育培训', key: 'edu', base: 55, icon: '📚', wuxing: '木', trend: '稳定需求', desc: 'K12到成人教育，需求刚性' },
+    { name: '💰 金融/理财', key: 'finance', base: 50, icon: '💰', wuxing: '金', trend: '专业门槛高', desc: '银行、证券、保险理财' },
+    { name: '🏥 医疗健康', key: 'health', base: 58, icon: '🏥', wuxing: '木', trend: '长期刚需', desc: '老龄化社会推动持续增长' },
+    { name: '📣 内容/传媒', key: 'media', base: 52, icon: '📣', wuxing: '火', trend: '个人品牌机会', desc: '短视频、公众号、直播带货' },
+    { name: '🛒 电商/零售', key: 'ecom', base: 48, icon: '🛒', wuxing: '水', trend: '竞争激烈但入门低', desc: '平台电商、社区团购、跨境' },
+    { name: '🏗️ 建筑/房产', key: 'const', base: 45, icon: '🏗️', wuxing: '土', trend: '周期性强', desc: '新型城镇化与旧改进展中' },
+    { name: '⚖️ 法律/咨询', key: 'law', base: 50, icon: '⚖️', wuxing: '金', trend: '专业高壁垒', desc: '律师、管理咨询、HR顾问' },
+    { name: '🍜 餐饮/服务', key: 'food', base: 42, icon: '🍜', wuxing: '水', trend: '低启动成本', desc: '小吃、外卖、社区餐饮' },
+    { name: '🚚 物流/运营', key: 'logistics', base: 44, icon: '🚚', wuxing: '水', trend: '稳定但难突破', desc: '快递、供应链、仓储管理' },
+    { name: '🎨 设计/创意', key: 'design', base: 50, icon: '🎨', wuxing: '火', trend: '自由职业机会大', desc: 'UI设计、品牌策划、摄影' },
+    { name: '🌾 农业/新农村', key: 'agri', base: 38, icon: '🌾', wuxing: '土', trend: '政策红利期', desc: '智慧农业、乡村旅游、特产' },
+  ];
+
+  industries.forEach(ind => {
+    let score = ind.base;
+
+    if (ind.key === 'tech' && (skills.tech.includes('编程开发') || skills.tech.includes('数据分析'))) score += 20;
+    if (ind.key === 'edu' && (skills.tech.includes('教育/培训') || skills.soft.includes('擅长教学'))) score += 22;
+    if (ind.key === 'finance' && (skills.tech.includes('财会/审计') || certs.includes('注册会计师CPA'))) score += 25;
+    if (ind.key === 'health' && (skills.tech.includes('医疗/护理') || certs.includes('医师执照'))) score += 28;
+    if (ind.key === 'media' && (skills.tech.includes('自媒体运营') || skills.tech.includes('视频剪辑') || skills.soft.includes('善于写作'))) score += 18;
+    if (ind.key === 'law' && (skills.tech.includes('法律/合规') || certs.includes('律师资格证'))) score += 30;
+    if (ind.key === 'design' && skills.tech.includes('设计（UI/平面）')) score += 22;
+    if (ind.key === 'ecom' && skills.tech.includes('销售/BD')) score += 15;
+    if (ind.key === 'ecom' && skills.tech.includes('市场营销')) score += 12;
+
+    if (years >= 5) score += 10;
+    if (years >= 10) score += 15;
+    if (capital >= 10 && ['ecom', 'food', 'agri'].includes(ind.key)) score += 12;
+    if (capital === 0 && ['tech', 'edu', 'media', 'design'].includes(ind.key)) score += 8;
+    if (risk === 'high' && ['ecom', 'food', 'media', 'agri'].includes(ind.key)) score += 10;
+    if (risk === 'low' && ['edu', 'health', 'law', 'finance'].includes(ind.key)) score += 8;
+    if (status === 'startup' && ['ecom', 'food', 'media', 'agri'].includes(ind.key)) score += 10;
+    if (status === 'unemployed' && capital === 0 && ['edu', 'tech', 'media'].includes(ind.key)) score += 8;
+    if (priorities.includes('薪资高') && ['tech', 'finance', 'law'].includes(ind.key)) score += 8;
+    if (priorities.includes('时间自由') && ['media', 'design', 'edu'].includes(ind.key)) score += 8;
+    if (priorities.includes('稳定安全') && ['edu', 'health', 'law'].includes(ind.key)) score += 8;
+    if (age > 35 && ['edu', 'health', 'law', 'finance'].includes(ind.key)) score += 5;
+    if (age < 28 && ['tech', 'media', 'design'].includes(ind.key)) score += 5;
+    if (skills.soft.includes('沟通表达强') && ['edu', 'law', 'media'].includes(ind.key)) score += 5;
+    if (skills.soft.includes('创意思维') && ['media', 'design', 'tech'].includes(ind.key)) score += 5;
+    if (city === '哈尔滨' && ['food', 'logistics', 'agri', 'edu'].includes(ind.key)) score += 4;
+
+    ind.score = Math.min(score, 99);
+  });
+
+  // Wuxing calculation
+  const wx = calcWuxing(data.birthYear, data.birthMonth);
+  industries.forEach(ind => {
+    if (ind.wuxing === wx.dominant) {
+      ind.score = Math.min(ind.score + 6, 99);
+      ind.wx_match = true;
+    }
+  });
+  industries.sort((a, b) => b.score - a.score);
+
+  industries.forEach(ind => { ind.wx_data = wx; });
+
+  return industries;
+}
+
+function renderBasicResult(data, industries) {
+  const { name, age, city, skills, certs } = data;
+  const statusMap = { graduate: '应届求职者', jobless: '在职转型者', unemployed: '转型待业者', startup: '创业探索者' };
+  const riskMap = { low: '稳健型', mid: '进取型', high: '冒险型' };
+  const wx = calcWuxing(data.birthYear, data.birthMonth);
+
+  document.getElementById('result-name').textContent = `Hi ${name}，这是你的职业路线图`;
+  document.getElementById('result-tagline').textContent = `${age}岁·${city}·${statusMap[data.status]}·${riskMap[data.risk]}`;
+  document.getElementById('result-score').textContent = industries[0].score;
+
+  const resultTags = document.getElementById('result-tags');
+  resultTags.innerHTML = [
+    `推荐：${industries[0].name.replace(/[^\u4e00-\u9fa5/a-zA-Z]/g, '')}`,
+    `${wx.dominant}命`,
+    `${skills.tech.length + skills.soft.length}项能力`,
+  ].map(t => `<span class="result-tag">${t}</span>`).join('');
+
+  const colors = ['#2563EB','#7C3AED','#059669','#D97706','#DC2626','#0F766E'];
+  const industryList = document.getElementById('industry-list');
+  industryList.innerHTML = industries.slice(0, 6).map((ind, i) => `
+    <div class="industry-item">
+      <div class="industry-header">
+        <span class="industry-name">${i + 1}. ${ind.name}</span>
+        <span class="industry-score">${ind.score}分</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:0%;background:${colors[i]}" data-width="${ind.score}%"></div></div>
+      <span class="industry-badge" style="background:${colors[i]}18;color:${colors[i]}">
+        ${ind.trend}${ind.wx_match ? ' · 五行吻合✨' : ''}
+      </span>
+    </div>
+  `).join('');
+
+  // Wuxing bars
+  const wxPct = { mu: wx.mu, huo: wx.huo, tu: wx.tu, jin: wx.jin, shui: wx.shui };
+  Object.entries(wxPct).forEach(([k, v]) => {
+    document.getElementById('wx-' + k).style.height = Math.max(12, Math.round(v * 80 / 100)) + 'px';
+    document.getElementById('wx-' + k + '-pct').textContent = v + '%';
+  });
+
+  const wxAdviceMap = {
+    '木': '你的五行偏木，教育、健康、文化行业是你的顺风赛道。耐心培育、长线经营是你的优势。',
+    '火': '五行偏火，科技、传媒、创意行业能点燃你的能量。你适合需要激情和创造力的岗位。',
+    '土': '五行偏土，建筑、农业、管理类行业能让你稳中求胜。你天生有耐力和执行力。',
+    '金': '五行偏金，金融、法律、精密制造是你的强项。规则感强、擅长谈判是你的标签。',
+    '水': '五行偏水，物流、餐饮、贸易行业流动性强，符合你灵活应变的特质。',
+  };
+  document.getElementById('wuxing-advice').textContent = wxAdviceMap[wx.dominant] || '五行平衡，适应能力强，多个行业都有发展空间。';
+
+  // Advice grid
+  const top1 = industries[0].name.replace(/[^\u4e00-\u9fa5/a-zA-Z]/g, '');
+  const adviceData = [
+    { icon: '🔎', title: '本周做这1件事', text: `搜索"${city} ${top1} 招聘"，看3-5个真实JD，对照自己的缺口在哪。` },
+    { icon: '📄', title: '优化你的简历', text: `针对${top1}方向，把你的经历重新组织，突出与它相关的3个成就。考虑使用我们的简历定制服务。` },
+    { icon: '🤝', title: '建立行业连接', text: `加入${top1}相关的群/论坛，先观察再提问，找到1个愿意帮你的人比刷100个岗位有用。` },
+    { icon: '📈', title: '补充核心技能', text: `${data.years < 2 ? '工作年限不长，先选一个方向深耕，别什么都学' : '有经验基础，可以补1-2个证书增强竞争力'}。` },
+  ];
+  document.getElementById('advice-grid').innerHTML = adviceData.map(a => `
+    <div class="advice-item">
+      <div class="advice-item-icon">${a.icon}</div>
+      <h4>${a.title}</h4>
+      <p>${a.text}</p>
+    </div>
+  `).join('');
+}
+
+// ===== AI API CALL =====
+async function callAI(data) {
+  const cfg = MODEL_CONFIG[aiConfig.model];
+  if (!cfg) throw new Error('未选择AI模型');
+
+  const { name, age, city, edu, years, salary, birthYear, birthMonth, status, capital, risk, skills, certs, priorities } = data;
+  const statusMap = { graduate: '应届毕业生/毕业1-2年在求职', jobless: '有工作但想换方向', unemployed: '失业中/被迫转型', startup: '有想法想创业' };
+  const riskMap = { low: '求稳，希望收入稳定', mid: '可以接受中等风险', high: '敢冒险，能接受失败' };
+
+  const prompt = `你是一位资深职业规划专家，同时也精通中国传统五行命理理论。请根据以下用户的详细资料，生成一份专业的职业方向分析报告。
+
+## 用户资料
+- 称呼：${name}
+- 年龄：${age}岁
+- 城市：${city}
+- 学历：${edu}
+- 当前状态：${statusMap[status]}
+- 工作年限：${years}年
+- 技术技能：${skills.tech.join('、') || '暂无'}
+- 软技能：${skills.soft.join('、') || '暂无'}
+- 持有证书：${certs.join('、') || '无'}
+- 可用资金：${capital === 0 ? '基本没有多余资金' : capital + '万元'}
+- 风险偏好：${riskMap[risk]}
+- 期望月薪：¥${salary}k
+- 最关心的：${priorities.join('、') || '未指定'}
+- 出生年份：${birthYear}年
+- 出生月份：${birthMonth}月
+
+## 输出要求
+请返回严格的JSON对象（不要额外文字），包含以下字段：
+
+1. "scores": 对象，包含以下维度0-100分的整数评分：
+   - "technical": 技术/专业能力
+   - "communication": 沟通表达
+   - "business": 商业思维
+   - "resilience": 抗压韧性
+   - "creativity": 创造力
+   
+2. "industry_analysis": 字符串，150-250字，分析最适合的行业及原因，结合用户技能、经历和城市特征
+
+3. "strength": 字符串，100-150字，分析用户在当前就业市场中的3个核心优势
+
+4. "risks": 数组，包含3-4个字符串，列出需要注意的风险点和短板（格式："⚠️ 风险描述"或"✅ 已规避的问题"）
+
+5. "timeline": 数组，包含3-4个对象，每个含"phase"（阶段标题，如"第1周"）和"action"（具体行动，30-50字）
+
+6. "wuxing_analysis": 字符串，80-120字，从五行命理角度给出行业建议，提到具体的五行属性（木火土金水）和对应行业
+
+7. "verdict": 字符串，20-40字，给用户的一句核心建议（有力量、有温度）
+
+请确保所有分析具体、有数据感、不说套话。针对用户的具体情况给出个性化建议。`;
+
+  // Build request
+  const headers = { 'Content-Type': 'application/json' };
+  if (cfg.provider === 'aliyun') {
+    headers['Authorization'] = 'Bearer ' + aiConfig.apiKey;
+  } else if (cfg.provider === 'baidu') {
+    headers['Authorization'] = 'Bearer ' + aiConfig.apiKey;
+  } else {
+    // DeepSeek (OpenAI-compatible)
+    headers['Authorization'] = 'Bearer ' + aiConfig.apiKey;
+  }
+
+  const body = JSON.stringify({
+    model: cfg.model,
+    messages: [
+      {
+        role: 'system',
+        content: '你是一位顶尖的职业规划顾问，拥有15年从业经验，同时精通五行命理。你用真实的行业数据、具体的案例、有力的事实来说话，不说空话套话。你的分析总是让用户感到"说到心坎里了"。'
+      },
+      {
+        role: 'user',
+        content: prompt
+      }
+    ],
+    temperature: 0.7,
+    max_tokens: 2048,
+    response_format: { type: 'json_object' }
+  });
+
+  const response = await fetch(cfg.endpoint, {
+    method: 'POST',
+    headers: headers,
+    body: body,
+    signal: AbortSignal.timeout(60000)
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`API请求失败 (${response.status}): ${errText.substring(0, 200)}`);
+  }
+
+  const result = await response.json();
+  const content = result.choices?.[0]?.message?.content;
+  if (!content) throw new Error('AI返回内容为空');
+
+  try {
+    return JSON.parse(content.trim());
+  } catch {
+    // Try to extract JSON from markdown code block
+    const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/) || [null, content];
+    return JSON.parse(jsonMatch[1].trim());
+  }
+}
+
+// ===== RENDER AI RESULTS =====
+function renderAIResult(result) {
+  document.getElementById('ai-report').style.display = 'block';
+  document.getElementById('ai-error').classList.remove('active');
+
+  // Scores
+  const scores = result.scores || {};
+  const scoreLabels = {
+    technical: '技术能力', communication: '沟通表达',
+    business: '商业思维', resilience: '抗压韧性', creativity: '创造力'
+  };
+  const scoreGrid = document.getElementById('ai-score-grid');
+  scoreGrid.innerHTML = Object.entries(scoreLabels).map(([k, label]) => `
+    <div class="ai-score-card">
+      <div class="num">${scores[k] || '—'}</div>
+      <div class="label">${label}</div>
+    </div>
+  `).join('');
+
+  // Industry analysis
+  document.getElementById('ai-industry-text').innerHTML = formatText(result.industry_analysis || 'AI分析中…');
+
+  // Strength
+  document.getElementById('ai-strength').innerHTML = formatText(result.strength || '');
+
+  // Risks
+  const risks = result.risks || [];
+  document.getElementById('ai-risks').innerHTML = risks.map(r => {
+    const cls = r.startsWith('✅') ? 'low-risk' : '';
+    return `<li class="${cls}">${r.replace(/^[⚠✅]\s*/, '')}</li>`;
+  }).join('');
+
+  // Timeline
+  const timeline = result.timeline || [];
+  document.getElementById('ai-timeline').innerHTML = timeline.map(t => `
+    <li><span class="phase">${escapeHtml(t.phase || '')}</span>${escapeHtml(t.action || '')}</li>
+  `).join('');
+
+  // Wuxing
+  document.getElementById('ai-wuxing').innerHTML = formatText(result.wuxing_analysis || '');
+
+  // Verdict
+  document.getElementById('ai-verdict').textContent = result.verdict || '';
+}
+
+function formatText(text) {
+  if (!text) return '';
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/(\d+)万/g, '<strong>$1万</strong>')
+    .replace(/(\d+)%/g, '<strong>$1%</strong>')
+    .replace(/\n/g, '</p><p>')
+    .replace(/^/, '<p>')
+    .replace(/$/, '</p>');
+}
+
+// ===== WUXING CALCULATION =====
+function calcWuxing(year, month) {
+  const earthly = (year - 4) % 12;
+  const heavenly = (year - 4) % 10;
+  const monthWx = [0.08,0.1,0.15,0.12,0.1,0.08,0.08,0.1,0.12,0.1,0.08,0.07];
+  const mFactor = monthWx[(month || 1) - 1];
+
+  const base = { mu: 20, huo: 20, tu: 20, jin: 20, shui: 20 };
+  const keys = ['mu', 'huo', 'tu', 'jin', 'shui'];
+  const yearMod = heavenly % 5;
+  base[keys[yearMod]] += 25;
+  base[keys[(yearMod + 2) % 5]] += 10;
+  const mMod = Math.round((month || 1) / 3) % 5;
+  base[keys[mMod]] += 8;
+
+  const total = Object.values(base).reduce((a, b) => a + b, 0);
+  const pct = {};
+  keys.forEach(k => pct[k] = Math.round(base[k] / total * 100));
+  const dominant = keys[yearMod];
+  const wxNameMap = { mu: '木', huo: '火', tu: '土', jin: '金', shui: '水' };
+
+  return { ...pct, dominant: wxNameMap[dominant] };
+}
+</script>
+
+</body>
+</html>
