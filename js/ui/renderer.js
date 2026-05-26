@@ -90,10 +90,6 @@ async function renderResult() {
 
 function switchResultTab(tab) {
   currentResultTab = tab;
-  document.querySelectorAll('.result-tab').forEach(t => t.classList.remove('active'));
-  // 找到对应的按钮
-  const tabs = document.querySelectorAll('.result-tab');
-  tabs.forEach(t => { if (t.textContent.trim() === document.querySelector(`.result-tab[onclick="switchResultTab('${tab}')"]`)?.textContent?.trim()) t.classList.add('active'); });
   renderResultTab();
 }
 

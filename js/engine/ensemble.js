@@ -43,7 +43,7 @@ function computeEnsemble() {
     const wf = fCount ? w.fortune / (w.skills * sCount + w.personality * pCount + w.fortune * fCount) : 0;
 
     const finalScore = Math.round(
-      (item.skillsScore * ws + item.personalityScore * wp + item.fortuneScore * wf) * 100
+      item.skillsScore * ws + item.personalityScore * wp + item.fortuneScore * wf
     );
 
     return { ...item, score: Math.min(99, finalScore) };
