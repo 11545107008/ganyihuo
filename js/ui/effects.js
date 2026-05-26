@@ -51,7 +51,7 @@ function initParticles() {
       // 绘制粒子
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(108,92,231,' + p.opacity + ')';
+      ctx.fillStyle = 'rgba(108,92,231,' + (p.opacity * 1.5) + ')';
       ctx.fill();
 
       // 连线：距离近的粒子之间
@@ -65,8 +65,8 @@ function initParticles() {
           ctx.beginPath();
           ctx.moveTo(p.x, p.y);
           ctx.lineTo(p2.x, p2.y);
-          const lineAlpha = (1 - dist / 120) * 0.12;
-          ctx.strokeStyle = 'rgba(0,210,255,' + lineAlpha + ')';
+          const lineAlpha = (1 - dist / 120) * 0.18;
+          ctx.strokeStyle = 'rgba(108,92,231,' + lineAlpha + ')';
           ctx.lineWidth = 0.5;
           ctx.stroke();
         }
@@ -80,7 +80,7 @@ function initParticles() {
         const glowAlpha = (1 - mdist / 150) * 0.3;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius * 2.5, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0,245,255,' + glowAlpha + ')';
+        ctx.fillStyle = 'rgba(108,92,231,' + glowAlpha + ')';
         ctx.fill();
       }
     }
