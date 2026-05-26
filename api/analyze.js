@@ -169,7 +169,7 @@ function analyzeEnsemble(data) {
   const tw = (hasS?w.skills:0)+(hasP?w.personality:0)+(hasF?w.fortune:0);
   const results = Object.values(combined).map(item => {
     const ws = hasS ? w.skills/tw : 0, wp = hasP ? w.personality/tw : 0, wf = hasF ? w.fortune/tw : 0;
-    return {...item, score: Math.min(99, Math.round((item.sS*ws+item.sP*wp+item.sF*wf)*100)) };
+    return {...item, score: Math.min(99, Math.round(item.sS*ws+item.sP*wp+item.sF*wf)) };
   });
   results.sort((a,b)=>b.score-a.score);
   return { model:'ensemble', results };
