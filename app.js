@@ -218,6 +218,66 @@
     { province: '西藏', cities: ['拉萨','日喀则'] }
   ];
 
+  // ==================== DATA: 命理 — 节气表 ====================
+  // 大约日期（用于月柱计算），实际需精确到小时
+  app.data.solarTerms = [
+    { name:'立春', month:2, day:4,  mzIdx:0 },   // 寅月
+    { name:'惊蛰', month:3, day:6,  mzIdx:1 },   // 卯月
+    { name:'清明', month:4, day:5,  mzIdx:2 },   // 辰月
+    { name:'立夏', month:5, day:6,  mzIdx:3 },   // 巳月
+    { name:'芒种', month:6, day:6,  mzIdx:4 },   // 午月
+    { name:'小暑', month:7, day:7,  mzIdx:5 },   // 未月
+    { name:'立秋', month:8, day:8,  mzIdx:6 },   // 申月
+    { name:'白露', month:9, day:8,  mzIdx:7 },   // 酉月
+    { name:'寒露', month:10,day:8,  mzIdx:8 },   // 戌月
+    { name:'立冬', month:11,day:7,  mzIdx:9 },   // 亥月
+    { name:'大雪', month:12,day:7,  mzIdx:10 },  // 子月
+    { name:'小寒', month:1, day:6,  mzIdx:11 }   // 丑月
+  ];
+
+  // ==================== DATA: 命理 — 天干阴阳五行 ====================
+  app.data.tgYinYang = [1,0,1,0,1,0,1,0,1,0]; // 甲阳1 乙阴0… 按天干索引
+  app.data.tgWuXing  = [0,0,1,1,2,2,3,3,4,4]; // 0木1火2土3金4水
+
+  // ==================== DATA: 命理 — 地支藏干表（每支1-3个藏干，含本气/中气/余气） ====================
+  // 格式: [天干索引列表, 藏干强弱权重]
+  app.data.zhiCangGan = {
+    '子': [{tgIdx:[9],   weight:[1.0]}],
+    '丑': [{tgIdx:[5,9,7], weight:[0.6,0.3,0.1]}],
+    '寅': [{tgIdx:[0,2,4], weight:[0.6,0.3,0.1]}],
+    '卯': [{tgIdx:[1],   weight:[1.0]}],
+    '辰': [{tgIdx:[4,1,8], weight:[0.6,0.3,0.1]}],
+    '巳': [{tgIdx:[2,4,6], weight:[0.6,0.3,0.1]}],
+    '午': [{tgIdx:[3,5],   weight:[0.7,0.3]}],
+    '未': [{tgIdx:[5,1,3], weight:[0.6,0.3,0.1]}],
+    '申': [{tgIdx:[6,8,4], weight:[0.6,0.3,0.1]}],
+    '酉': [{tgIdx:[7],   weight:[1.0]}],
+    '戌': [{tgIdx:[4,7,3], weight:[0.6,0.3,0.1]}],
+    '亥': [{tgIdx:[8,0],   weight:[0.7,0.3]}]
+  };
+
+  // ==================== DATA: 命理 — 纳音表（60甲子纳音，30组） ====================
+  // 30组纳音，每组管2年
+  app.data.nayin = [
+    '海中金','炉中火','大林木','路旁土','剑锋金','山头火',
+    '涧下水','城头土','白蜡金','杨柳木','泉中水','屋上土',
+    '霹雳火','松柏木','长流水','砂中金','山下火','平地木',
+    '壁上土','金箔金','覆灯火','天河水','大驿土','钗钏金',
+    '桑柘木','大溪水','沙中土','天上火','石榴木','大海水'
+  ];
+  // 纳音五行映射: 0木,1火,2土,3金,4水
+  app.data.nayinWuXing = [
+    3,1,0,2,3,1,  // 海中金 炉中火 大林木 路旁土 剑锋金 山头火
+    4,2,3,0,4,2,  // 涧下水 城头土 白蜡金 杨柳木 泉中水 屋上土
+    1,0,4,3,1,0,  // 霹雳火 松柏木 长流水 砂中金 山下火 平地木
+    2,3,1,4,2,3,  // 壁上土 金箔金 覆灯火 天河水 大驿土 钗钏金
+    0,4,2,1,0,4   // 桑柘木 大溪水 沙中土 天上火 石榴木 大海水
+  ];
+
+  // ==================== DATA: 命理 — 十神关系表 ====================
+  // 格局列表
+  app.data.patternNames = ['正官格','七杀格','正印格','偏印格','正财格','偏财格','食神格','伤官格','建禄格','羊刃格','从强格','从弱格','化气格','专旺格'];
+
   // ==================== DATA: RIASEC 24题 ====================
   app.data.riasecQuestions = [
     { id:'R1', dim:'R', text:'我喜欢动手修理或组装物品'},
@@ -427,61 +487,115 @@
     { id:'t5', name:'双栏精英风', desc:'双栏布局突出技能与成就，适合中高级管理者', icon:'⭐' }
   ];
 
-  // ==================== 八字计算引擎 ====================
+  // ==================== 八字计算引擎（精确版） ====================
   app.engines = {};
   app.engines.bazi = {
     tianGan: ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'],
     diZhi: ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'],
     wuXingMap: { '甲':'木','乙':'木','丙':'火','丁':'火','戊':'土','己':'土','庚':'金','辛':'金','壬':'水','癸':'水' },
-    zhiWuxing: { '子':'水','丑':'土','寅':'木','卯':'木','辰':'土','巳':'火','午':'火','未':'土','申':'金','酉':'金','戌':'土','亥':'水' },
+    zhiWuXing: { '子':'水','丑':'土','寅':'木','卯':'木','辰':'土','巳':'火','午':'火','未':'土','申':'金','酉':'金','戌':'土','亥':'水' },
     shengXiaoMap: ['鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪'],
+    wuXingNames: ['木','火','土','金','水'],
 
-    calc(year, month, day, hour, isLunar) {
-      // Simple BaZi calculation using Julian Day
-      let y = year, m = month, d = day;
-      // Basic year pillar
+    // 儒略日精确计算（公历日期→儒略日）
+    _julianDay(y, m, d) {
+      if (m <= 2) { y--; m += 12; }
+      let A = Math.floor(y / 100);
+      let B = 2 - A + Math.floor(A / 4);
+      return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + B - 1524.5;
+    },
+
+    // 获取节气对应的月支索引（0=寅...11=丑）
+    _getMonthZhiIdx(y, m, d) {
+      // 判断是否在某节气之前，是则用上一个月支
+      const terms = app.data.solarTerms;
+      for (let i = terms.length - 1; i >= 0; i--) {
+        const t = terms[i];
+        if (m > t.month || (m === t.month && d >= t.day)) {
+          return t.mzIdx;
+        }
+      }
+      return 11; // 小寒之前属丑月
+    },
+
+    // 获取出生日到最近节气的天数（用于大运起运年龄）
+    _daysToNearestTerm(y, m, d) {
+      const jd = this._julianDay(y, m, d);
+      const terms = app.data.solarTerms;
+      let minDiff = Infinity;
+      for (let t of terms) {
+        const tj = this._julianDay(y, t.month, t.day);
+        const diff = Math.abs(tj - jd);
+        if (diff < minDiff) minDiff = diff;
+      }
+      return minDiff;
+    },
+
+    calc(year, month, day, hour, gender) {
+      // hour: 0-23, 转为时辰索引 0=子时(23-1) ... 11=亥时(21-23)
+      let hIdx = Math.floor((hour + 1) % 24 / 2);
+
+      // 1. 年柱
       let yGIdx = (year - 4) % 10;
+      if (yGIdx < 0) yGIdx += 10;
       let yZIdx = (year - 4) % 12;
+      if (yZIdx < 0) yZIdx += 12;
 
-      // Month pillar (五虎遁)
-      let mZIdx = (month - 1 + 2) % 12; // 寅月为正月
-      let mGIdx = (yGIdx * 2 + month - 1) % 10;
+      // 2. 月柱（按节气）
+      let mZIdx = this._getMonthZhiIdx(year, month, day);
+      let mGIdx = (yGIdx * 2 + mZIdx) % 10;
 
-      // Day pillar — use simplified algorithm
-      let baseDate = new Date(year, 0, 1);
-      let targetDate = new Date(year, month - 1, day);
-      let dayDiff = Math.floor((targetDate - baseDate) / (1000 * 60 * 60 * 24));
-      let dGIdx = (dayDiff + 3) % 10;
-      let dZIdx = (dayDiff + 3) % 12;
+      // 3. 日柱（精确儒略日公式）
+      const jd = this._julianDay(year, month, day);
+      // 日干支序号 = (儒略日 + 9) % 60，匹配已知基准
+      let gzIdx = Math.round(jd + 9) % 60;
+      if (gzIdx < 0) gzIdx += 60;
+      let dGIdx = gzIdx % 10;
+      let dZIdx = gzIdx % 12;
 
-      // Hour pillar (五鼠遁)
-      let hZIdx = hour; // hour is 0-11
-      let hGIdx = (dGIdx * 2 + hZIdx) % 10;
+      // 4. 时柱（五鼠遁）
+      let hGIdx = (dGIdx * 2 + hIdx) % 10;
 
       let riGan = this.tianGan[dGIdx];
+      let riZhi = this.diZhi[dZIdx];
       let riWuXing = this.wuXingMap[riGan];
 
-      // Wuxing industry mapping
-      const wuxingIndustryMap = {
-        '木': ['education','medical','media','self_media','energy','catering'],
-        '火': ['internet','ai_tech','retail','catering','media','self_media','energy'],
-        '土': ['realestate','finance','manufacture','gov'],
-        '金': ['finance','manufacture','logistics'],
-        '水': ['logistics','internet','retail','psychology','gov']
-      };
+      // 干支组合60甲子序号 → 纳音组（每组2个干支）
+      let yearGZIdx = (yGIdx % 10) * 12 + yZIdx;
+      // 简化：年干支 60甲子序号 = yGIdx*12 + yZIdx（但天干周期10，地支周期12）
+      // 更准确：按 (yGIdx + yZIdx) 的模组合
+      yearGZIdx = ((yGIdx % 10) * 12 + (yZIdx % 12)) % 60;
+      let dayGZIdx = gzIdx % 60;
+      let niY = Math.floor(yearGZIdx / 2);
+      let niD = Math.floor(dayGZIdx / 2);
+      let nayinYear = app.data.nayin[niY] || '未知';
+      let nayinDay = app.data.nayin[niD] || '未知';
+      let nayinYearWX = app.data.nayinWuXing[niY];
+      let nayinDayWX = app.data.nayinWuXing[niD];
+
+      // 藏干
+      let cgYear = app.data.zhiCangGan[this.diZhi[yZIdx]];
+      let cgMonth = app.data.zhiCangGan[this.diZhi[mZIdx]];
+      let cgDay = app.data.zhiCangGan[riZhi];
+      let cgHour = app.data.zhiCangGan[this.diZhi[hIdx]];
 
       return {
+        year: year, month: month, day: day, hour: hour, gender: gender,
         pillars: {
-          year: { gan: this.tianGan[yGIdx], zhi: this.diZhi[yZIdx] },
-          month: { gan: this.tianGan[mGIdx], zhi: this.diZhi[mZIdx] },
-          day: { gan: riGan, zhi: this.diZhi[dZIdx] },
-          hour: { gan: this.tianGan[hGIdx], zhi: this.diZhi[hZIdx] }
+          year:  { gan: this.tianGan[yGIdx], zhi: this.diZhi[yZIdx], gIdx: yGIdx, zIdx: yZIdx },
+          month: { gan: this.tianGan[mGIdx], zhi: this.diZhi[mZIdx], gIdx: mGIdx, zIdx: mZIdx },
+          day:   { gan: riGan, zhi: riZhi, gIdx: dGIdx, zIdx: dZIdx },
+          hour:  { gan: this.tianGan[hGIdx], zhi: this.diZhi[hIdx], gIdx: hGIdx, zIdx: hIdx }
         },
-        riGan: riGan,
-        riWuXing: riWuXing,
+        riGan: riGan, riZhi: riZhi, riWuXing: riWuXing,
+        riGanIdx: dGIdx, riZhiIdx: dZIdx,
         shengXiao: this.shengXiaoMap[yZIdx],
-        baziString: this.tianGan[yGIdx] + this.diZhi[yZIdx] + ' ' + this.tianGan[mGIdx] + this.diZhi[mZIdx] + ' ' + riGan + this.diZhi[dZIdx] + ' ' + this.tianGan[hGIdx] + this.diZhi[hZIdx],
-        wuxingIndustryMap: wuxingIndustryMap
+        baziString: this.tianGan[yGIdx] + this.diZhi[yZIdx] + ' ' + this.tianGan[mGIdx] + this.diZhi[mZIdx] + ' ' + riGan + riZhi + ' ' + this.tianGan[hGIdx] + this.diZhi[hIdx],
+        nayin: { year: nayinYear, day: nayinDay, yearWX: nayinYearWX, dayWX: nayinDayWX },
+        cangGan: { year: cgYear, month: cgMonth, day: cgDay, hour: cgHour },
+        yearGZIdx: yearGZIdx, dayGZIdx: dayGZIdx,
+        _getMonthZhiIdx: this._getMonthZhiIdx.bind(this),
+        _daysToNearestTerm: this._daysToNearestTerm.bind(this)
       };
     }
   };
@@ -554,21 +668,340 @@
     }
   };
 
-  // ==================== 命理引擎 ====================
+  // ==================== 命理引擎（专业版：十神/格局/用神/大运） ====================
   app.engines.destiny = {
+    // 十神名称对照
+    _shishenNames: ['比肩','劫财','食神','伤官','偏财','正财','七杀','正官','偏印','正印'],
+    // 十神简码：0比肩1劫财2食神3伤官4偏财5正财6七杀7正官8偏印9正印
+
+    // 计算两个天干之间的十神关系
+    _getShiShen(riGanIdx, otherGanIdx) {
+      const tgYinYang = app.data.tgYinYang;
+      const tgWX = app.data.tgWuXing;
+      const riWX = tgWX[riGanIdx];
+      const riYY = tgYinYang[riGanIdx];
+      const otWX = tgWX[otherGanIdx];
+      const otYY = tgYinYang[otherGanIdx];
+
+      const sameYX = (riYY === otYY); // 同阴阳?
+
+      if (riWX === otWX) {
+        // 同五行：比肩（同阴阳）或劫财（异阴阳）
+        return sameYX ? 0 : 1;
+      }
+      // 生克关系：木→火→土→金→水→木
+      const shengSeq = [0,1,2,3,4]; // 木火土金水
+      const riPos = shengSeq.indexOf(riWX);
+      const otPos = shengSeq.indexOf(otWX);
+
+      // other 生 ri → 印星
+      if ((otPos + 1) % 5 === riPos) {
+        return sameYX ? 9 : 8; // 正印(同阴阳) 偏印(异阴阳) — 实际：生我者，同阴阳为偏印(9)，异阴阳为正印(8)
+      }
+      // ri 生 other → 食伤
+      if ((riPos + 1) % 5 === otPos) {
+        return sameYX ? 2 : 3; // 食神(同阴阳) 伤官(异阴阳)
+      }
+      // other 克 ri → 官杀
+      if ((otPos + 2) % 5 === riPos || (otPos + 2) % 5 === riPos) {
+        // 克我者：同阴阳为七杀(6)，异阴阳为正官(7)
+        return sameYX ? 6 : 7;
+      }
+      // ri 克 other → 财星
+      // 我克者：同阴阳为偏财(4)，异阴阳为正财(5)
+      return sameYX ? 4 : 5;
+    },
+
+    // 计算完整十神表
+    _calcShiShenTable(baziResult) {
+      const p = baziResult.pillars;
+      const riGanIdx = p.day.gIdx;
+      return {
+        year: { gan: this._getShiShen(riGanIdx, p.year.gIdx), name: this._shishenNames[this._getShiShen(riGanIdx, p.year.gIdx)] },
+        month: { gan: this._getShiShen(riGanIdx, p.month.gIdx), name: this._shishenNames[this._getShiShen(riGanIdx, p.month.gIdx)] },
+        day: { gan: 0, name: '日主' },
+        hour: { gan: this._getShiShen(riGanIdx, p.hour.gIdx), name: this._shishenNames[this._getShiShen(riGanIdx, p.hour.gIdx)] }
+      };
+    },
+
+    // 统计八字五行旺衰（天干+地支+藏干加权）
+    _calcWuxingStrength(baziResult) {
+      const strength = { '木':0, '火':0, '土':0, '金':0, '水':0 };
+      const wuXingName = ['木','火','土','金','水'];
+
+      const pillars = ['year','month','day','hour'];
+      pillars.forEach(pk => {
+        const p = baziResult.pillars[pk];
+        // 天干权重 1.0
+        const tgWX = app.data.tgWuXing[p.gIdx];
+        strength[wuXingName[tgWX]] += 1.0;
+
+        // 地支五行（天干化出的五行）
+        const zhiWXName = baziResult.zhiWuXing[p.zhi];
+        strength[zhiWXName] += 1.0;
+
+        // 藏干加权
+        const cgData = baziResult.cangGan[pk];
+        if (cgData && cgData.length > 0) {
+          const cg = cgData[0];
+          cg.tgIdx.forEach((tgIdx, i) => {
+            const wx = app.data.tgWuXing[tgIdx];
+            strength[wuXingName[wx]] += (cg.weight[i] || 0.3) * 0.5;
+          });
+        }
+      });
+
+      return strength;
+    },
+
+    // 判断日主强弱
+    _judgeStrength(baziResult, wxStrength) {
+      const wuXingName = ['木','火','土','金','水'];
+      const riWX = baziResult.riWuXing;
+      const riWXIdx = wuXingName.indexOf(riWX);
+
+      // 月令权重 — 月支五行对日主的影响最大
+      const monthZhiWX = baziResult.zhiWuXing[baziResult.pillars.month.zhi];
+      const isMonthSupport = (monthZhiWX === riWX); // 月令与日主同五行
+      // 生我关系：月令生我
+      const shengSeq = [0,1,2,3,4]; // 木火土金水
+      const monthWXIdx = shengSeq.indexOf(wuXingName.indexOf(monthZhiWX));
+      const riIdx = shengSeq.indexOf(wuXingName.indexOf(riWX));
+      // 修正：用正确的索引
+      const mWIdx = wuXingName.indexOf(monthZhiWX);
+      // 生我：(mWIdx + 1) % 5 === riWXIdx 表示前一个生后一个
+      // 木生火(0→1), 火生土(1→2), 土生金(2→3), 金生水(3→4), 水生木(4→0)
+      const isMonthShengRi = ((mWIdx + 1) % 5) === riWXIdx;
+
+      const myStrength = wxStrength[riWX] || 0;
+      const totalStrength = Object.values(wxStrength).reduce((a,b) => a+b, 0);
+      const ratio = totalStrength > 0 ? myStrength / totalStrength : 0.2;
+
+      let label;
+      if (ratio >= 0.35 && isMonthSupport) label = '强';
+      else if (ratio >= 0.35 && isMonthShengRi) label = '偏强';
+      else if (ratio <= 0.15) label = '弱';
+      else if (ratio <= 0.22) label = '偏弱';
+      else label = '中和';
+
+      return { label, ratio, monthSupport: isMonthSupport, monthShengRi: isMonthShengRi };
+    },
+
+    // 计算喜用神
+    _calcYongShen(strengthResult, baziResult) {
+      const wuXingName = ['木','火','土','金','水'];
+      const riWXIdx = wuXingName.indexOf(baziResult.riWuXing);
+
+      // 扶抑法则
+      let xiShen = [], yongShen = [], jiShen = [];
+      const label = strengthResult.label;
+
+      if (label === '强' || label === '偏强') {
+        // 日主强 → 喜克泄耗
+        // 克：克日主的五行 (riWXIdx + 2) % 5
+        // 泄：日主生的五行 (riWXIdx + 1) % 5
+        // 耗：日主克的五行 (riWXIdx + 3) % 5  — 实际：木克土(0→2)，土是木克的
+        // 正确的关系链：我克 = (riIdx + 2) % 5，克我 = (riIdx + 4) % 5 或 (riIdx - 1 + 5) % 5
+        // 木(0)克土(2): (0+2)%5=2；火(1)克金(3): (1+2)%5=3；土(2)克水(4): (2+2)%5=4；金(3)克木(0): (3+2)%5=0；水(4)克火(1): (4+2)%5=1 ✓
+        const keIdx = (riWXIdx + 2) % 5; // 我克的
+        const xieIdx = (riWXIdx + 1) % 5; // 我生的
+        // 克我者
+        const beiKeIdx = (riWXIdx + 3) % 5;
+        // 重新确认：克我者应该是 (riIdx -2 +5)%5 即 (riIdx+3)%5
+        // 木(0)被金克→金(3):(0+3)%5=3✓；火(1)被水克→水(4):(1+3)%5=4✓；土(2)被木克→木(0):(2+3)%5=0✓
+        yongShen = [wuXingName[xieIdx], wuXingName[keIdx]];  // 用神：泄+克
+        xiShen = [wuXingName[beiKeIdx]];                       // 喜神：克我
+        jiShen = [wuXingName[riWXIdx]];                        // 忌神：比劫（再加印星）
+        // 印星 = 生我者
+        const shengIdx = (riWXIdx + 4) % 5; // (riIdx-1+5)%5
+        jiShen.push(wuXingName[shengIdx]);
+      } else if (label === '弱' || label === '偏弱') {
+        // 日主弱 → 喜生扶
+        const beiKeIdx = (riWXIdx + 3) % 5; // 克我 = 忌
+        const xieIdx = (riWXIdx + 1) % 5;   // 我生 = 忌
+        const shengIdx = (riWXIdx + 4) % 5;  // 生我 = 喜/用
+        yongShen = [wuXingName[riWXIdx]];      // 用神：比劫
+        xiShen = [wuXingName[shengIdx]];       // 喜神：印星
+        jiShen = [wuXingName[beiKeIdx], wuXingName[xieIdx]]; // 忌神
+      } else {
+        // 中和 — 以通关为主
+        yongShen = [wuXingName[(riWXIdx + 1) % 5]];
+        xiShen = [wuXingName[riWXIdx]];
+        jiShen = [];
+      }
+
+      return { yongShen, xiShen, jiShen, label };
+    },
+
+    // 计算格局
+    _calcPattern(baziResult) {
+      const monthZhi = baziResult.pillars.month.zhi;
+      const monthGanIdx = baziResult.pillars.month.gIdx;
+      const riGanIdx = baziResult.pillars.day.gIdx;
+
+      const shishen = this._getShiShen(riGanIdx, monthGanIdx);
+      const shishenName = this._shishenNames[shishen];
+
+      // 月支是否为日主临官/帝旺
+      const riWX = baziResult.riWuXing;
+      const zhiToWX = { '子':'水','丑':'土','寅':'木','卯':'木','辰':'土','巳':'火','午':'火','未':'土','申':'金','酉':'金','戌':'土','亥':'水' };
+      const monthWX = zhiToWX[monthZhi];
+      const isTongWX = (monthWX === riWX);
+
+      // 根据月令十神判断格局
+      const patternMap = {
+        0: '建禄格',   // 月令比肩 → 建禄格
+        1: '羊刃格',   // 月令劫财 → 羊刃格（帝旺）
+        2: '食神格',   // 月令食神
+        3: '伤官格',   // 月令伤官
+        4: '偏财格',   // 月令偏财
+        5: '正财格',   // 月令正财
+        6: '七杀格',   // 月令七杀
+        7: '正官格',   // 月令正官
+        8: '偏印格',   // 月令偏印
+        9: '正印格'    // 月令正印
+      };
+
+      let pattern = patternMap[shishen] || '普通格';
+      let patternDesc = '';
+
+      // 特殊格局判断
+      const wxStrength = this._calcWuxingStrength(baziResult);
+      const wxArr = ['木','火','土','金','水'];
+      const riWXVal = wxStrength[riWX] || 0;
+      const totalWX = Object.values(wxStrength).reduce((a,b)=>a+b,0);
+      const riRatio = totalWX > 0 ? riWXVal / totalWX : 0;
+
+      if (riRatio > 0.5) {
+        pattern = '从强格';
+        patternDesc = '日主极旺，五行独大，顺势而为，宜从强';
+      } else if (riRatio < 0.1 && totalWX > 0) {
+        pattern = '从弱格';
+        patternDesc = '日主极弱，宜弃命从势，顺势而行';
+      } else {
+        patternDesc = '以月令取格，' + pattern;
+      }
+
+      return { pattern, patternDesc, shishenMonth: shishenName };
+    },
+
+    // 计算大运
+    _calcDayun(baziResult) {
+      const yearGanIdx = baziResult.pillars.year.gIdx;
+      const tgYinYang = app.data.tgYinYang;
+      const gender = baziResult.gender || 'male';
+      const isYangNian = (tgYinYang[yearGanIdx] === 1); // 1=阳年
+
+      // 顺排还是逆排
+      const forward = (isYangNian && gender === 'male') || (!isYangNian && gender === 'female');
+
+      // 起运年龄
+      const daysToTerm = baziResult._daysToNearestTerm(baziResult.year, baziResult.month, baziResult.day);
+      const startAge = Math.round((daysToTerm / 3) * 10) / 10; // 3天=1岁
+
+      // 排大运（前8步），每步10年
+      const dayun = [];
+      const mGIdx = baziResult.pillars.month.gIdx;
+      const mZIdx = baziResult.pillars.month.zIdx;
+
+      for (let i = 0; i < 8; i++) {
+        const step = i + 1;
+        let gIdx, zIdx;
+        if (forward) {
+          gIdx = (mGIdx + step) % 10;
+          zIdx = (mZIdx + step) % 12;
+        } else {
+          gIdx = (mGIdx - step + 100) % 10;
+          zIdx = (mZIdx - step + 120) % 12;
+        }
+        dayun.push({
+          step,
+          ganZhi: app.engines.bazi.tianGan[gIdx] + app.engines.bazi.diZhi[zIdx],
+          gIdx, zIdx,
+          startAge: Math.round((startAge + (step - 1) * 10) * 10) / 10,
+          endAge: Math.round((startAge + step * 10) * 10) / 10
+        });
+      }
+
+      return { startAge, forward, dayun };
+    },
+
+    // 升级后的行业匹配（用神为核心）
+    _calcIndustryScores(baziResult, yongShenResult) {
+      const scores = {};
+      const yongShen = yongShenResult.yongShen || [];
+      const xiShen = yongShenResult.xiShen || [];
+      const jiShen = yongShenResult.jiShen || [];
+
+      app.data.industries.forEach(ind => {
+        let score = 50; // 基础分
+
+        // 用神匹配（权重60%）
+        const indWX = ind.wuxing || [];
+        let yongMatch = 0;
+        indWX.forEach(wx => {
+          if (yongShen.includes(wx)) yongMatch += 2;
+          else if (xiShen.includes(wx)) yongMatch += 1;
+          else if (jiShen.includes(wx)) yongMatch -= 1;
+        });
+        score += yongMatch * 12;
+
+        // 日主五行匹配（权重25%）
+        const riWX = baziResult.riWuXing;
+        if (indWX.includes(riWX)) score += 8;
+
+        // 纳音参考（权重15%）
+        const nayinWXIdx = baziResult.nayin.dayWX;
+        if (nayinWXIdx !== undefined && indWX.includes(['木','火','土','金','水'][nayinWXIdx])) {
+          score += 5;
+        }
+
+        scores[ind.id] = Math.min(Math.max(Math.round(score), 20), 100);
+      });
+
+      return scores;
+    },
+
     calc(profile) {
       if (!profile.bazi || !profile.bazi.birthDate) return null;
       const bd = profile.bazi.birthDate;
-      const result = app.engines.bazi.calc(bd.year, bd.month, bd.day, bd.hour || 0, bd.calendarType || 'solar');
+      // 性别从个人信息或命理信息取
+      const gender = (profile.basic && profile.basic.gender) || (profile.bazi && profile.bazi.gender) || 'male';
 
-      // Calculate destiny industry scores
-      const scores = {};
-      const favIndustries = result.wuxingIndustryMap[result.riWuXing] || [];
-      app.data.industries.forEach(ind => {
-        scores[ind.id] = favIndustries.includes(ind.id) ? 85 : 50;
-      });
+      // 1. 精确八字排盘
+      const result = app.engines.bazi.calc(bd.year, bd.month, bd.day, bd.hour || 12, gender);
 
-      return { baziResult: result, scores };
+      // 2. 十神计算
+      const shishenTable = this._calcShiShenTable(result);
+
+      // 3. 五行旺衰
+      const wxStrength = this._calcWuxingStrength(result);
+
+      // 4. 日主强弱
+      const strengthResult = this._judgeStrength(result, wxStrength);
+
+      // 5. 喜用神
+      const yongShenResult = this._calcYongShen(strengthResult, result);
+
+      // 6. 格局
+      const patternResult = this._calcPattern(result);
+
+      // 7. 大运
+      const dayunResult = this._calcDayun(result);
+
+      // 8. 行业匹配
+      const scores = this._calcIndustryScores(result, yongShenResult);
+
+      return {
+        baziResult: result,
+        shishenTable,
+        wxStrength,
+        strengthResult,
+        yongShenResult,
+        patternResult,
+        dayunResult,
+        scores
+      };
     }
   };
 
@@ -623,6 +1056,12 @@
           id: 'destiny', title: '命理指引', access: 'destiny',
           content: {
             bazi: destinyResult ? destinyResult.baziResult : null,
+            shishenTable: destinyResult ? destinyResult.shishenTable : null,
+            wxStrength: destinyResult ? destinyResult.wxStrength : null,
+            strengthResult: destinyResult ? destinyResult.strengthResult : null,
+            yongShenResult: destinyResult ? destinyResult.yongShenResult : null,
+            patternResult: destinyResult ? destinyResult.patternResult : null,
+            dayunResult: destinyResult ? destinyResult.dayunResult : null,
             destinyScores: destinyResult ? destinyResult.scores : null
           }
         });
@@ -1343,14 +1782,96 @@
     _renderDestiny(content) {
       if (!content.bazi) return '<p>未提供命理信息</p>';
       const b = content.bazi;
-      let h = '<p><strong>八字排盘:</strong> ' + b.baziString + '</p>';
-      h += '<p><strong>日主:</strong> ' + b.riGan + ' (' + b.riWuXing + ') | <strong>生肖:</strong> ' + b.shengXiao + '</p>';
-      h += '<p style="color:var(--text-secondary);font-size:0.9rem">日主五行属' + b.riWuXing + '，适配行业方向：';
-      const indNames = (b.wuxingIndustryMap[b.riWuXing] || []).map(id => {
-        const ind = app.data.industries.find(i => i.id === id);
-        return ind ? ind.name : id;
-      });
-      h += indNames.join('、') + '</p>';
+      const st = content.shishenTable;
+      const wxS = content.wxStrength;
+      const sr = content.strengthResult;
+      const ysr = content.yongShenResult;
+      const pr = content.patternResult;
+      const dr = content.dayunResult;
+      const ds = content.destinyScores;
+
+      let h = '';
+
+      // 八字排盘表
+      h += '<div class="bazi-table"><div class="bazi-title">八字排盘</div><table><thead><tr><th></th><th>年柱</th><th>月柱</th><th>日柱</th><th>时柱</th></tr></thead>';
+      h += '<tbody>';
+      h += '<tr><td class="bz-label">天干</td><td class="bz-gan">' + b.pillars.year.gan + '</td><td class="bz-gan">' + b.pillars.month.gan + '</td><td class="bz-gan bz-ri">' + b.pillars.day.gan + '</td><td class="bz-gan">' + b.pillars.hour.gan + '</td></tr>';
+      h += '<tr><td class="bz-label">地支</td><td>' + b.pillars.year.zhi + '</td><td>' + b.pillars.month.zhi + '</td><td class="bz-ri">' + b.riZhi + '</td><td>' + b.pillars.hour.zhi + '</td></tr>';
+      // 藏干
+      if (b.cangGan) {
+        h += '<tr><td class="bz-label">藏干</td>';
+        const pillars = ['year','month','day','hour'];
+        pillars.forEach(pk => {
+          const cg = b.cangGan[pk];
+          const names = cg && cg.length > 0 ? cg[0].tgIdx.map(i => app.engines.bazi.tianGan[i]).join('') : '-';
+          h += '<td class="bz-cg">' + names + '</td>';
+        });
+        h += '</tr>';
+      }
+      // 十神
+      if (st) {
+        h += '<tr><td class="bz-label">十神</td>';
+        h += '<td>' + st.year.name + '</td><td>' + st.month.name + '</td><td class="bz-ri">日主</td><td>' + st.hour.name + '</td></tr>';
+      }
+      h += '</tbody></table>';
+      h += '<div style="display:flex;gap:24px;margin-top:12px;font-size:0.9rem;color:var(--text-secondary)">';
+      h += '<span>纳音年: ' + (b.nayin ? b.nayin.year : 'N/A') + '</span>';
+      h += '<span>纳音日: ' + (b.nayin ? b.nayin.day : 'N/A') + '</span>';
+      h += '<span>生肖: ' + b.shengXiao + '</span>';
+      h += '</div></div>';
+
+      // 五行旺衰 & 日主强弱
+      if (wxS && sr) {
+        h += '<div class="destiny-card"><strong>五行旺衰</strong><div class="skill-bars" style="margin-top:8px">';
+        const wxOrder = ['木','火','土','金','水'];
+        const wxColors = { '木':'#4ade80', '火':'#f87171', '土':'#fbbf24', '金':'#e2e8f0', '水':'#60a5fa' };
+        const maxVal = Math.max(...Object.values(wxS), 1);
+        wxOrder.forEach(wx => {
+          const val = wxS[wx] || 0;
+          const pct = Math.round((val / maxVal) * 100);
+          const isRi = (wx === b.riWuXing);
+          h += '<div class="skill-bar-row"><span class="skill-bar-label" style="' + (isRi ? 'font-weight:bold;color:var(--color-accent)' : '') + '">' + wx + (isRi ? ' (日主)' : '') + '</span><div class="skill-bar-track"><div class="skill-bar-fill" style="width:' + pct + '%;background:' + (wxColors[wx]||'#7c8cf8') + '"></div></div><span class="skill-bar-score">' + val.toFixed(1) + '</span></div>';
+        });
+        h += '</div>';
+        h += '<p style="margin-top:8px"><strong>日主强弱:</strong> <span class="tag ' + (sr.label==='强'||sr.label==='偏强'?'tag-success':'tag-warning') + '">' + sr.label + '</span> (占比 ' + Math.round(sr.ratio*100) + '%)</p>';
+        h += '</div>';
+      }
+
+      // 格局 & 喜用神
+      if (pr && ysr) {
+        h += '<div class="destiny-card"><strong>格局分析</strong><p style="font-size:1.1rem;margin:4px 0"><span class="tag tag-primary">' + pr.pattern + '</span></p>';
+        h += '<p style="color:var(--text-secondary);font-size:0.9rem">' + pr.patternDesc + '</p>';
+        h += '<p style="margin-top:8px"><strong>月令十神:</strong> ' + pr.shishenMonth + '</p>';
+        h += '<div style="margin-top:12px"><strong>喜用神 & 忌神:</strong>';
+        h += '<p style="margin:4px 0">喜神: <span style="color:#4ade80">' + (ysr.xiShen||[]).join('、') + '</span></p>';
+        h += '<p style="margin:2px 0">用神: <span style="color:var(--color-primary)">' + (ysr.yongShen||[]).join('、') + '</span></p>';
+        h += '<p style="margin:2px 0">忌神: <span style="color:#f87171">' + (ysr.jiShen||[]).join('、') + '</span></p>';
+        h += '</div></div>';
+      }
+
+      // 大运
+      if (dr) {
+        h += '<div class="destiny-card"><strong>大运走势</strong><p style="margin:4px 0;color:var(--text-secondary)">起运年龄: ' + dr.startAge + '岁 | ' + (dr.forward ? '顺排' : '逆排') + '</p>';
+        h += '<div class="dayun-list" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">';
+        dr.dayun.slice(0,6).forEach(dy => {
+          h += '<div class="dayun-item" style="flex:0 0 calc(33% - 6px);padding:6px 8px;background:var(--glass-bg);border-radius:8px;text-align:center;font-size:0.8rem">';
+          h += '<div style="font-weight:bold;font-size:1rem">' + dy.ganZhi + '</div>';
+          h += '<div style="color:var(--text-secondary)">' + dy.startAge + '-' + dy.endAge + '岁</div></div>';
+        });
+        h += '</div></div>';
+      }
+
+      // 命理行业推荐
+      if (ds) {
+        h += '<div class="destiny-card"><strong>命理推荐行业</strong><div class="match-cards" style="margin-top:8px">';
+        const sorted = Object.entries(ds).sort((a,b) => b[1]-a[1]).slice(0,5);
+        sorted.forEach(([id,score]) => {
+          const ind = app.data.industries.find(i => i.id === id);
+          h += '<div class="match-card glass-card" style="flex:0 0 calc(33% - 8px)"><div class="match-score">' + score + '%</div><div class="match-name">' + (ind ? ind.name : id) + '</div></div>';
+        });
+        h += '</div></div>';
+      }
+
       return h;
     },
 

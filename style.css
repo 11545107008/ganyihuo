@@ -170,6 +170,32 @@ textarea.input-field { resize: vertical; min-height: 80px; }
   background: rgba(124,140,248,0.2); color: var(--color-primary);
   border-color: var(--color-primary);
 }
+.tag-success { background: rgba(74,222,128,0.15); color: #4ade80; border-color: rgba(74,222,128,0.4); }
+.tag-warning { background: rgba(251,191,36,0.15); color: #fbbf24; border-color: rgba(251,191,36,0.4); }
+.tag-primary { background: rgba(124,140,248,0.15); color: var(--color-primary); border-color: rgba(124,140,248,0.4); }
+
+/* === Bazi Table === */
+.bazi-table { margin-bottom: var(--space-lg); overflow-x: auto; }
+.bazi-title { font-weight: 700; margin-bottom: var(--space-sm); font-size: 1.05rem; color: var(--text-primary); }
+.bazi-table table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.95rem; }
+.bazi-table th, .bazi-table td { padding: 8px 6px; border: 1px solid rgba(255,255,255,0.08); }
+.bazi-table th { background: rgba(124,140,248,0.15); color: var(--color-primary); font-weight: 600; }
+.bazi-table .bz-label { color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; }
+.bazi-table .bz-gan { font-size: 1.1rem; font-weight: 700; }
+.bazi-table .bz-ri { color: var(--color-accent); background: rgba(0,238,255,0.08); }
+.bazi-table .bz-cg { font-size: 0.78rem; color: var(--text-tertiary); }
+
+/* === Destiny Card === */
+.destiny-card {
+  background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--border-default); border-radius: 12px;
+  padding: var(--space-md); margin-bottom: var(--space-md);
+}
+.destiny-card strong { color: var(--text-primary); font-size: 1rem; }
+
+/* === Dayun List === */
+.dayun-item { transition: var(--transition-fast); }
+.dayun-item:hover { border-color: var(--color-primary) !important; }
 
 /* === Slider === */
 .slider-container { margin-bottom: var(--space-md); }
