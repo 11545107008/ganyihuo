@@ -1,153 +1,173 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://api.deepseek.com https://dashscope.aliyuncs.com https://qianfan.baidubce.com https://ganyihuo-d4e3q4c0s-11545107008.projects.vercel.app; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.deepseek.com https://dashscope.aliyuncs.com https://qianfan.baidubce.com https://ganyihuo-d4e3q4c0s-11545107008.projects.vercel.app; img-src 'self' data:;">
-<title>干个活儿 — AI多模型职业决策引擎</title>
-<link rel="stylesheet" href="css/style.css?v=20260527">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>干个活儿 - AI多模型职业决策引擎</title>
+  <meta name="description" content="能力适配+性格匹配+命理指引，AI多模型帮你找到最适合的职业方向">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Canvas Particle Background -->
+  <canvas id="particleCanvas"></canvas>
 
-<!-- Canvas 粒子背景 -->
-<canvas id="particleCanvas"></canvas>
+  <!-- App Container -->
+  <div id="app">
 
-<!-- 导航栏 -->
-<nav class="nav-glass" id="mainNav">
-  <div class="nav-inner">
-    <a class="nav-logo" href="#" onclick="showPage('home');return false">
-      <span class="logo-icon">⚡</span><span class="logo-text">干个活儿</span>
-    </a>
-    <div class="nav-links" id="navLinks">
-      <a href="#" onclick="showPage('home');return false" class="nav-link active">首页</a>
-      <a href="#" onclick="showPage('assessment-skills');return false" class="nav-link">能力测评</a>
-      <a href="#" onclick="showPage('assessment-personality');return false" class="nav-link">性格测评</a>
-      <a href="#" onclick="showPage('assessment-fortune');return false" class="nav-link">命理测评</a>
-      <a href="#" onclick="showPage('result');return false" class="nav-link">综合结果</a>
-    </div>
-    <button class="nav-toggle" id="navToggle" onclick="toggleNav()">☰</button>
-  </div>
-</nav>
-
-<!-- ========== 首页 ========== -->
-<section class="page active" id="page-home">
-  <div class="hero">
-    <h1 class="hero-title">
-      <span class="gradient-text">想挣钱想找工作</span><br>
-      却不知自己能做什么？
-    </h1>
-    <p class="hero-sub">AI + 心理学 + 命理学，三大模型帮你精准定位职业方向</p>
-    <div class="hero-stats">
-      <div class="stat-item"><span class="stat-num">2.4亿</span><span class="stat-label">灵活就业人群</span></div>
-      <div class="stat-item"><span class="stat-num">62%</span><span class="stat-label">职场人有副业</span></div>
-      <div class="stat-item"><span class="stat-num">12</span><span class="stat-label">大行业覆盖</span></div>
-      <div class="stat-item"><span class="stat-num">3</span><span class="stat-label">套测评模型</span></div>
-    </div>
-  </div>
-
-  <!-- 三模型入口卡片 -->
-  <div class="model-cards">
-    <div class="model-card" onclick="startAssessment('skills')">
-      <div class="model-card-icon">💪</div>
-      <h3>能力适配</h3>
-      <p>基于你的技能、经验、资源，匹配最适合的全职/兼职/副业/创业方向</p>
-      <div class="model-card-tags">
-        <span>技能评估</span><span>收入分析</span><span>风险匹配</span>
+    <!-- ====== 导航栏 ====== -->
+    <nav id="navbar" class="glass-nav">
+      <div class="nav-brand">
+        <span class="nav-logo">⚡</span>
+        <span class="nav-title">干个活儿</span>
       </div>
-      <span class="model-card-btn">开始测评 →</span>
-    </div>
-    <div class="model-card" onclick="startAssessment('personality')">
-      <div class="model-card-icon">🧠</div>
-      <h3>性格匹配</h3>
-      <p>霍兰德RIASEC职业兴趣测评，60年科学验证，找到与性格契合的职业</p>
-      <div class="model-card-tags">
-        <span>RIASEC</span><span>MBTI</span><span>18题精简</span>
+      <div class="nav-links">
+        <a href="#/home" class="nav-link" data-route="/home">首页</a>
+        <a href="#/member" class="nav-link" data-route="/member">我的报告</a>
+        <a href="#/pricing" class="nav-link" data-route="/pricing">升级会员</a>
       </div>
-      <span class="model-card-btn">开始测评 →</span>
-    </div>
-    <div class="model-card" onclick="startAssessment('fortune')">
-      <div class="model-card-icon">🔮</div>
-      <h3>命理指引</h3>
-      <p>四柱八字+五行分析，从传统智慧角度解读你的职业运势和方向</p>
-      <div class="model-card-tags">
-        <span>八字排盘</span><span>五行旺衰</span><span>大运流年</span>
+    </nav>
+
+    <!-- ====== Page 1: 首页 ====== -->
+    <section id="page-home" class="page active">
+      <div class="home-hero">
+        <h1 class="hero-title gradient-text">AI多模型职业决策引擎</h1>
+        <p class="hero-subtitle">能力适配 · 性格匹配 · 命理指引 · 全方位发现你的职业潜能</p>
+        <div class="hero-cards">
+          <div class="hero-card" onclick="app.router.navigate('/collect')">
+            <span class="card-icon">🧠</span>
+            <h3>能力适配</h3>
+            <p>10维能力评估<br>精准匹配行业岗位</p>
+          </div>
+          <div class="hero-card" onclick="app.router.navigate('/collect')">
+            <span class="card-icon">🎯</span>
+            <h3>性格匹配</h3>
+            <p>RIASEC + MBTI<br>双模型深度分析</p>
+          </div>
+          <div class="hero-card" onclick="app.router.navigate('/collect')">
+            <span class="card-icon">🔮</span>
+            <h3>命理指引</h3>
+            <p>四柱八字五行<br>天时地利人和</p>
+          </div>
+        </div>
+        <button class="btn-primary glow" onclick="app.router.navigate('/collect')">
+          🚀 开始完整测评（免费）
+        </button>
+        <div class="hero-stats">
+          <span>📊 15个行业</span>
+          <span>🏢 300+岗位</span>
+          <span>🌍 350+城市</span>
+          <span>⭐ 满意度98%</span>
+        </div>
       </div>
-      <span class="model-card-btn">开始测评 →</span>
+    </section>
+
+    <!-- ====== Page 2: 信息采集（7步问卷） ====== -->
+    <section id="page-collect" class="page">
+      <!-- 进度条 -->
+      <div class="collect-progress">
+        <div class="progress-bar">
+          <div class="progress-fill" id="collect-progress-fill"></div>
+        </div>
+        <div class="progress-steps" id="collect-progress-steps">
+          <span class="step-dot active" data-step="1">基本信息</span>
+          <span class="step-dot" data-step="2">工作经历</span>
+          <span class="step-dot" data-step="3">职业目标</span>
+          <span class="step-dot" data-step="4">自我评估</span>
+          <span class="step-dot" data-step="5">性格测试(上)</span>
+          <span class="step-dot" data-step="6">性格测试(下)</span>
+          <span class="step-dot" data-step="7">命理信息</span>
+        </div>
+      </div>
+
+      <!-- 步骤内容区 -->
+      <div class="collect-container" id="collect-container">
+        <!-- 步骤由JS动态渲染 -->
+      </div>
+
+      <!-- 导航按钮 -->
+      <div class="collect-nav">
+        <button class="btn-secondary" id="btn-prev" onclick="app.collect.prevStep()">← 上一步</button>
+        <button class="btn-primary" id="btn-next" onclick="app.collect.nextStep()">下一步 →</button>
+      </div>
+    </section>
+
+    <!-- ====== Page 3: 评测进行 ====== -->
+    <section id="page-assessing" class="page">
+      <div class="assessing-container">
+        <div class="assessing-sphere" id="assessing-sphere">
+          <div class="sphere-ring r1"></div>
+          <div class="sphere-ring r2"></div>
+          <div class="sphere-ring r3"></div>
+          <div class="sphere-core"></div>
+        </div>
+        <p class="assessing-title" id="assessing-title">正在分析您的能力画像...</p>
+        <div class="assessing-progress">
+          <div class="assessing-fill" id="assessing-fill"></div>
+        </div>
+        <div class="assessing-checklist" id="assessing-checklist">
+          <div class="check-item" data-index="0"><span class="check-icon">⏺</span> 数据预处理</div>
+          <div class="check-item" data-index="1"><span class="check-icon">⏺</span> 能力维度分析</div>
+          <div class="check-item" data-index="2"><span class="check-icon">⏺</span> 性格模型匹配</div>
+          <div class="check-item" data-index="3"><span class="check-icon">⏺</span> 命理推算</div>
+          <div class="check-item" data-index="4"><span class="check-icon">⏺</span> 综合评分计算</div>
+          <div class="check-item" data-index="5"><span class="check-icon">⏺</span> 报告生成</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== Page 4: 结果展示 ====== -->
+    <section id="page-results" class="page">
+      <div class="results-header">
+        <h2>您的职业决策报告</h2>
+        <div class="results-summary" id="results-summary"></div>
+      </div>
+      <div class="results-content" id="results-content">
+        <!-- 由JS渲染分级内容 -->
+      </div>
+      <div class="results-footer" id="results-footer">
+        <button class="btn-secondary" onclick="app.router.navigate('/home')">返回首页</button>
+        <button class="btn-primary glow" onclick="app.router.navigate('/pricing')">升级会员</button>
+      </div>
+    </section>
+
+    <!-- ====== Page 5: 付费引导 ====== -->
+    <section id="page-pricing" class="page">
+      <h2 class="section-title">选择适合您的方案</h2>
+      <div class="pricing-grid" id="pricing-grid">
+        <!-- 由JS渲染 -->
+      </div>
+      <div class="pricing-faq">
+        <h3>常见问题</h3>
+        <details><summary>可以升级吗？</summary><p>可以！已购买低等级后补差价即可升级到更高等级。</p></details>
+        <details><summary>不满意可以退款吗？</summary><p>7天无理由退款，放心尝试。</p></details>
+        <details><summary>会员有效期多久？</summary><p>钻卡会员365天，金卡/银卡会员365天，单项购买永久有效。</p></details>
+        <details><summary>报告可以重新生成吗？</summary><p>可随时更新个人信息后重新生成最新报告，会员任期内不限次数。</p></details>
+      </div>
+    </section>
+
+    <!-- ====== Page 6: 会员中心 ====== -->
+    <section id="page-member" class="page">
+      <div class="member-container" id="member-container">
+        <!-- 由JS渲染 -->
+      </div>
+    </section>
+
+    <!-- ====== Page 7: 报告详情 ====== -->
+    <section id="page-report" class="page">
+      <div class="report-container" id="report-container">
+        <!-- 由JS渲染 -->
+      </div>
+    </section>
+
+    <!-- ====== 弹窗 ====== -->
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal-content glass-card" id="modal-content"></div>
     </div>
+
+    <!-- ====== Toast ====== -->
+    <div class="toast-container" id="toast-container"></div>
   </div>
 
-  <!-- 用户类型 -->
-  <div class="section">
-    <h2 class="section-title">无论你处于哪个阶段</h2>
-    <div class="user-types">
-      <div class="user-type-card">
-        <div class="user-type-icon">🎓</div>
-        <h4>大学生就业</h4>
-        <p>不知道自己适合什么行业？专业不对口怎么办？</p>
-      </div>
-      <div class="user-type-card">
-        <div class="user-type-icon">🔄</div>
-        <h4>中年失业转型</h4>
-        <p>35岁+怎么重新出发？有什么副业可以搞？</p>
-      </div>
-      <div class="user-type-card">
-        <div class="user-type-icon">🚀</div>
-        <h4>创业/副业探索</h4>
-        <p>手里有点钱想搞事情？兼职副业怎么选？</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- CTA -->
-  <div class="cta-section">
-    <h2>免费测评，3分钟找到方向</h2>
-    <p>你只需要诚实地面对自己，剩下的交给算法</p>
-    <button class="btn-primary btn-glow" onclick="startAssessment('skills')">开始免费测评 ⚡</button>
-  </div>
-
-  <footer class="footer">
-    <p>干个活儿 © 2026 | AI多模型职业决策引擎 | 数据仅存储于你的浏览器</p>
-  </footer>
-</section>
-
-<!-- ========== 能力测评页 ========== -->
-<section class="page" id="page-assessment-skills">
-  <div class="assessment-container" id="skillsForm"></div>
-</section>
-
-<!-- ========== 性格测评页 ========== -->
-<section class="page" id="page-assessment-personality">
-  <div class="assessment-container" id="personalityForm"></div>
-</section>
-
-<!-- ========== 命理测评页 ========== -->
-<section class="page" id="page-assessment-fortune">
-  <div class="assessment-container" id="fortuneForm"></div>
-</section>
-
-<!-- ========== 结果页 ========== -->
-<section class="page" id="page-result">
-  <div class="result-container" id="resultContent">
-    <div class="result-empty">
-      <h2>还没有测评结果</h2>
-      <p>完成至少一个测评模型后，这里会展示你的职业分析报告</p>
-      <button class="btn-primary" onclick="startAssessment('skills')">开始测评</button>
-    </div>
-  </div>
-</section>
-
-<!-- JS 模块加载 -->
-<script src="js/config.js?v=20260527"></script>
-<script src="js/utils/security.js?v=20260527"></script>
-<script src="js/utils/api.js?v=20260527"></script>
-<script src="js/models/skills.js?v=20260527"></script>
-<script src="js/models/personality.js?v=20260527"></script>
-<script src="js/models/fortune.js?v=20260527"></script>
-<script src="js/engine/ensemble.js?v=20260527"></script>
-<script src="js/engine/localjobs.js?v=20260527"></script>
-<script src="js/ui/effects.js?v=20260527"></script>
-<script src="js/ui/forms.js?v=20260527"></script>
-<script src="js/ui/renderer.js?v=20260527"></script>
-<script src="js/app.js?v=20260527"></script>
+  <script src="app.js"></script>
 </body>
 </html>
